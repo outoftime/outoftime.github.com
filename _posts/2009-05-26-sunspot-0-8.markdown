@@ -1,0 +1,103 @@
+---
+title: Sunspot 0.8 is out
+layout: post
+---
+
+On Friday, I released the next milestone in Sunspot, version 0.8. This version doesn't add to or change any of the basic functionality, but does add some advanced features which the app I work on for my day job happens to demand. Here's a rundown:
+
+#### Direct access to the Query API
+
+Users of Sunspot will doubless be familiar with Sunspot's search DSL, which gives an English-like interface for constructing search parameters. In some cases, however, such a DSL is actually counterproductive, particularly when searches are being built by an intermediate object, and thus not necessarily all in one place. So, the new methods `Sunspot.new_search()` and `Search#query()` are exposed, and the `Sunspot::Query` class itself is now part of the public API. What I have in mind in particular here is an application of the Go4 Builder pattern, along with ActiveRecord's hash-initializer pattern, to elegantly translate web query parameters into a Sunspot search. Here's a stripped-down example of what I think the code will look like to do that:
+
+{% highlight ruby %}
+class EventSearchBuilder
+  attr_reader :search
+
+
+  def initialize(options = {})
+    @search = Sunspot.new_search(Event)
+    options.each_pair do |attr, value|
+      if respond_to?("#{attr}=")
+        send("#{attr}=", value)
+      end
+    end
+  end
+
+
+  def when=(day_string)
+    case day_string
+    when 'future'
+      @search.query.add_restriction(:start_time, :greater_than, Time.now)
+    when 'past'
+      @search.query.add_restriction(:start_time, :less_than, Time.now)
+    else
+      date_time = Date.parse(day_string).to_time
+      @search.query.add_restriction(:start_time, :between, date_time..(date_time + 1.day))
+    end
+  end
+
+
+  def page=(page)
+    @search.query.paginate(page)
+  end
+
+
+  def sort=(field)
+    @search.query.order_by(field)
+  end
+end
+{% endhighlight %}
+
+Then in controller code, it's as simple as:
+
+{% highlight ruby %}
+def search
+  @search = EventSearchBuilder.new(params).search
+  @search.execute!
+end
+{% endhighlight %}
+
+#### Dynamic Fields
+
+I wouldn't be surprised if I'm the only person who ever uses this feature of Sunspot, but just in case, let's look at a real-world example. Let's say part of my data model uses free-form key-value pairs, which use a constrained (but user-definable) set of keys and free-form values. I'll call my model `KeyValuePairs`.
+
+The trick I would like to pull here is that I would like to treat each key as a separate field in search, so that I can constrain, order, facet, etc. on the values for one key without them being affected by other keys. Since the keys are user-defined, I can't just set up normal fields at build time; they need to be defined at index time. Enter Sunspot's dynamic fields (we'll use [Sunspot::Rails](http://github.com/outoftime/sunspot_rails)'s wrapper API here):
+
+{% highlight ruby %}
+class Business < ActiveRecord::Base
+  has_many :key_value_pairs
+
+
+  searchable do
+    dynamic_string :key_value_pairs do
+      key_value_pairs.inject({}) do |hash, pair|
+        hash.merge(pair.key.to_sym => pair.value)
+      end
+    end
+  end
+end
+{% endhighlight %}
+
+
+This sets up a dynamic field which is populated using the given block. What's important there is that the field is populated using a hash - the keys of the hash become individual dynamic fields, and the values populate those fields in the index. The "base name" of the field is `key_value_pairs`, which is used to namespace the dynamic names that come out of the hash.
+
+Working with dynamic fields is a lot like working with regular ones, except in the query, calls are wrapped in a `dynamic` block:
+
+{% highlight ruby %}
+Business.search do
+  dynamic :key_value_pairs do
+    with(:cuisine, 'Sushi')
+    facet(:atmosphere)
+  end
+end
+{% endhighlight %}
+
+Naturally, those field names (`:cuisine`, `:atmosphere`) wouldn't be hard-coded in a real application, since they would not be known at build time.
+
+#### Dirty Sessions
+
+Sessions now track whether any operations have been performed since the last time a `commit` was issued. The `Session#dirty?` method answers that question, and the `Session#commit_if_dirty` does exactly what it sounds like. Useful methods if you want to keep your commits to a minimum (you do) but you may have various parts of the code issuing Sunspot operations without any central knowledge on the part of your application.
+
+#### That's all for now
+
+Sunspot 0.9 is up next; the main goal for that version is to replace solr-ruby with [RSolr](http://github.com/mwmitchell/rsolr/tree/master) as the low-level Solr interface, which will open the door to more features in future versions (query-based faceting, [LocalSolr](http://www.gissearch.com/localsolr) support, etc.), but probably won't have much effect on the API for that version (other than supporting use of the faster [Curb](http://curb.rubyforge.org/) library for the HTTP communication with Solr).

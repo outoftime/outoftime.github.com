@@ -1,0 +1,85 @@
+body {
+	font-family: Helvetica;
+	background-color: #ddd;
+	margin: 0;
+	padding: 0;
+}
+
+#main {
+	position: relative;
+	background-color: #fff;
+	border: 2px solid #666;
+	margin: 1% 23% 1% 23%;
+}
+
+#content {
+	margin: 2% 4%;
+}
+
+.highlight {
+	margin: 0 2em;
+	padding: 1em;
+	background-color: #333;
+  color: #fff;
+}
+
+.highlight pre {
+	margin: 0;
+  overflow: auto;
+}
+
+h1, h2, h3 {
+	color: #f90;
+}
+
+h1 {
+	font-size: 4em;
+	margin: 0 0 .1em 0;
+}
+
+h2 {
+	font-size: 2em;
+	margin: 0 0 .1em 0;
+}
+
+h3 {
+	font-size: 1.5em;
+	margin: 1em 0 .5em 0;
+}
+
+h4 {
+	margin: 1em 0 1em 0;
+	color: #666;
+}
+
+h5 {
+  margin: 0 0 1em 0;
+  color: #666;
+}
+
+p {
+	margin: 1em 0 1em 0;
+	font-size: .9em;
+	clear: left;
+}
+
+ul {
+	margin: 0;
+	font-size: .8em;
+}
+
+a {
+	text-decoration: none;
+	font-weight: bold;
+  color: #3677a9;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.forkme {
+	position: absolute;
+	right: 0px;
+	border: 0px solid transparent;
+}
