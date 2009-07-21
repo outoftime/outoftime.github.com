@@ -1,0 +1,574 @@
+---
+title: Sunspot 0.9 Released
+layout: post
+---
+
+If you haven't read the front page of this morning's Times, then you heard it
+first here: Sunspot 0.9 is out. Here's what I wrote about the upcoming version
+in my last post about Sunspot, on the occasion of the 0.8 release:
+
+> Sunspot 0.9 is up next; the main goal for that version is to replace solr-ruby
+> with [RSolr](http://github.com/mwmitchell/rsolr/tree/master) as the low-level
+> Solr interface, which will open the door to more features in future versions
+> (query-based faceting, [LocalSolr](http://www.gissearch.com/localsolr) support,
+> etc.), but probably won't have much effect on the API for that version (other
+> than supporting use of the faster [Curb](http://curb.rubyforge.org/) library
+> for the HTTP communication with Solr).
+
+Turns out that was completely wrong: 0.9 introduces lots and lots of new
+features, inspired by requests from users, anticipated needs in my company's
+application, and a close reading of the Sunspot wiki to find out more about what
+it's capable of. Read on for the juicy details.
+
+But first, this post is really long, so here's the first table of contents I've
+ever put in a blog post:
+
+* [Dismax queries](#dismax_queries)
+* [Field and document boosting](#field_and_document_boosting)
+* [Specifying fields for fulltext search](#choose_your_fields_for_fulltext_search)
+* [Indexing multiple values in text fields](#index_multiple_values_in_text_fields)
+* [Accessing keyword relevance score and stored field values](#its_a_hit)
+* [Smarter shorthand restrictions](#smarter_shorthand_restrictions)
+* [Using disjunctions and conjunctions](#have_your_cake_or_eat_it_too_and_enjoy_it)
+* [Random ordering](#random_ordering)
+* [More facet control](#more_facet_control)
+* [Time range facets](#time_facets)
+* [Get referenced objects from facets on foreign keys](#instantiated_facets)
+* [Facet by class](#facet_by_class)
+* [Batch indexing](#batch_indexing)
+* [New Date field type](#date_field_type)
+* [Direct access to data accessors](#access_to_data_accessors)
+* [Executable to configure production Solr instances](#easily_configure_your_solr_installation_with_sunspotconfiguresolr)
+* [RSolr is in; solr-ruby is out](#rsolr_replaces_solrruby)
+* [Sunspot no longer accidentally depends on ActiveSupport](#remove_accidental_activesupport_dependency)
+* [What to look for in future versions](#toward_the_future)
+* [Installation](#install_it)
+* [Submit feature requests, bug reports, and patches](#be_in_touch)
+
+If this is the first you've heard of Sunspot, I'd recommend checking out the
+[home page](http://outoftime.github.com/sunspot) and the
+[README](http://outoftime.github.com/sunspot/doc) before reading on.
+
+### A Better Fulltext Search
+
+The new version introduces several improvements to how fulltext search is
+performed, giving you a lot more control over how it works and how relevance
+is calculated.
+
+#### Dismax queries
+
+Fulltext search in Sunspot 0.9 is performed using Solr's
+[dismax handler](http://wiki.apache.org/solr/DisMaxRequestHandler), an
+awesome feature that I had managed to be unaware of until fairly recently. You
+can read all about it in the Solr API docs, but the upshot is that Solr parses
+fulltext queries under the assumption that they are coming from user input. It
+provides a circumscribed subset of the usual Lucene query syntax: in particular,
+well-matched quotes can be used to demarcate a phrase, and the +/- modifiers
+work as usual. All other Lucene query syntax is escaped, and non-well-matched
+quotation marks are ignored.
+
+As well as providing user-input-safe query parsing, the use of dismax queries
+opens up a few more features. Read on.
+
+#### Field and document boosting
+
+Probably the most requested feature for Sunspot is boosting. Sunspot now
+supports boosting at both the document level and the field level. Document
+boosts can be dynamic (i.e., evaluate a method or block for each indexed object
+to determine the boost) or static; field boosts are always static.
+
+Some examples:
+
+{% highlight ruby %}
+Sunspot.setup(Post) do
+  boost 2.0 # All Posts will have a document-level boost of 2.0
+  text :title, :boost => 1.5 # The title field will have a boost of 1.5
+  text :body # Body will have the default boost of 1.0
+end
+
+Sunspot.setup(User) do
+  boost do # featured users get a big boost
+    if featured?
+      2.0
+    else
+      0.75
+    end
+  end
+end
+{% endhighlight %}
+
+#### [Choose your fields for fulltext search][keyword-fields]
+
+In Sunspot 0.8, fulltext search always searched all of the text fields. In 0.9,
+you can specify which fields you'd like to search:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  keywords 'pizza restaurant', :fields => [:title, :abstract]
+end
+{% endhighlight %}
+
+If you don't specify which fields to search, the search will of course apply to
+all indexed text fields. Note that when searching for multiple types, the set of
+available text fields is the union of text fields configured for the types under
+search, not the intersection as in attribute field search.
+
+#### Index multiple values in text fields
+
+Sunspot 0.8 didn't allow the indexing of multiple values for text fields. In
+0.9, all text fields allow multiple values. The reasoning for this is that
+the main reason to disallow multiple values is that multi-valued fields cannot
+be used for sorting; but sorting by tokenized text fields is nonsense anyway.
+So this is fine:
+
+{% highlight ruby %}
+Sunspot.setup(Post) do
+  text :comment_bodies do
+    comments.map { |comment| comment.body }
+  end
+end
+{% endhighlight %}
+
+### Search API
+
+The new release also adds several enhancements to the general search API,
+increasing the information available from results as well as enhancing the power
+and ease of use of building queries.
+
+#### It's a hit
+
+The Search class now implements the <code>#hits</code> method, which returns
+objects encapsulating result data coming directly from Solr. <code>#hits</code>
+is an enhanced version of the <code>#raw_results</code> method available in
+0.8; <code>#raw_results</code> is still aliased and the objects returned are
+backward-compatible.
+
+As in 0.8, Hit objects give access to the class name and primary key of the
+result object. They also give access to the keyword relevance score, if they're
+coming from a keyword search. You can call <code>#instance</code> to load the
+actual result instance - the first time you call that method on a Hit, all the
+Hit objects will have their instances populated, so don't worry about losing
+batch data retrieval.
+
+Finally, Hit objects give access to stored fields, another new feature in v0.9.
+Stored fields can be configured in the indexer setup:
+
+{% highlight ruby %}
+Sunspot.setup(Post) do
+  string :title, :stored => true
+end
+{% endhighlight %}
+
+Then here's how to get data out of the Hit object:
+
+{% highlight ruby %}
+search = Sunspot.search(Post) { keywords 'pizza' }
+hit = search.hits.first
+hit.class_name #=> "Post"
+hit.primary_key #=> "12"
+hit.score #=> 8.27
+hit.stored(:title) #=> "Best pizza joints in town"
+hit.instance #=> #<Post:0xb7d4c0d0>
+{% endhighlight %}
+
+Stored fields are most useful if you store a few crucial fields that you'd like
+to be able to display without making the round trip to persistent storage to
+retrieve the data.
+
+#### Smarter shorthand restrictions
+
+Sunspot 0.9 expands the types that can be passed as a value into the short-form
+<code>#with</code> method:
+
+* Passing a scalar value will scope to results where the field contains that
+  value (this is not new).
+* Passing an Array will scope to results where the field contains any of the
+  values in the array.
+* Passing a Range will scope to results where the field's value is in the range.
+
+For example:
+
+{% highlight ruby %}
+Sunspot.search(Post) { with(:blog_id, 1) } # Find all posts with blog_id 1
+Sunspot.search(Post) { with(:category_ids, [1, 3, 5]) } # Find all posts whose
+                                                        # category_id is 1, 3,
+                                                        # or 5
+Sunspot.search(Post) { with(:average_rating, 3.0..5.0) } # Find all posts whose
+                                                         # average rating is
+                                                         # between 3.0 and 5.0
+{% endhighlight %}
+
+#### Have your cake OR (eat it too AND enjoy it)
+
+The query DSL now supports the <code>#any_of</code> and <code>#all_of</code>
+methods, which group the enclosed restrictions into disjunctions and
+conjunctions respectively. One good use case is if you have an expiry time
+field; you'd like to get results whose expiry is either in the future, or nil:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  any_of do
+    with(:expires_at).greater_than(Time.now)
+    with(:expires_at, nil)
+  end
+end
+{% endhighlight %}
+
+If you'd like to AND together restrictions inside an OR, you can nest an
+<code>#all_of</code> block:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  any_of do
+    with(:average_rating).greater_than(3.0)
+    all_of do
+      with(:featured, true)
+      with(:published_at).greater_than(Time.now - 2.weeks)
+    end
+  end
+end
+{% endhighlight %}
+
+Note that using #all_of at the top level of a query block is a no-op, since
+query restrictions are already combined using AND semantics.
+
+#### Random ordering
+
+By popular request, Sunspot now supports random ordering, which makes use of
+Solr's [RandomSortField](http://lucene.apache.org/solr/api/org/apache/solr/schema/RandomSortField.html):
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  order_by_random
+end
+{% endhighlight %}
+
+### Faceting
+
+One of the biggest and most exciting changes in the new release is far fuller
+support for Solr's faceting capabilities. While 0.8 supported basic field
+facets, I think it's safe to say that 0.9 supports pretty much all of
+[Solr's built-in faceting
+features](http://wiki.apache.org/solr/SimpleFacetParameters).
+
+#### More facet control
+
+The call to <code>#facet</code> inside the query DSL now takes the following
+options:
+
+<dt><code>:sort</code></dt>
+<dd>How the facet rows should be sorted. Options are <code>:count</code>, which orders by the number of results
+matching the row's value, and <code>:index</code>, which
+sorts the values lexically.</dd>
+<dt><code>:limit</code></dt>
+<dd>Maximum number of facet rows to return.</dd>
+<dt><code>:minimum_count</code></dt>
+<dd>The minimum count a facet row must have to be returned.</dd>
+<dt><code>:zeros</code></dt>
+<dd>Whether to return facet rows that match no documents in the scope. Default
+is false; setting to true is the same as setting :minimum_count to 0.</dd>
+
+So, for example:
+
+{% highlight ruby %}
+Sunspot.search do
+  facet :author_name, :sort => :index
+  facet :category_ids, :sort => :count, :limit => 5
+end
+{% endhighlight %}
+
+#### Time Facets
+
+Solr has special support for faceting over a time range, with a given interval
+to which rows should apply. The new release adds an API for this type of facet;
+simply provide the <code>:time_range</code> key to use this type of faceting.
+Note that time faceting only works with <code>time</code> type fields - Sunspot
+will fail fast if you try to use it with another field type.
+
+Available options for time faceting are:
+
+<dt><code>:time_range</code></dt>
+<dd>A Range object of Times. This is the full range over which times are
+returned. Specifying this field also enables time faceting.</dd>
+<dt><code>:time_interval</code></dt>
+<dd>Interval that each row should cover, in seconds. The default is 1 day.</dd>
+<dt><code>:time_other</code></dt>
+<dd>Times outside the range that should be returned as facet rows. Allowed
+values are <code>:before</code>, <code>:after</code>, <code>:between</code>,
+<code>:none</code>, and <code>:all</code>. The default is <code>:none</code>.</dd>
+
+For example:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  facet :published_at, :time_range => 1.year.ago..Time.now,
+                       :time_interval => 1.month
+end
+{% endhighlight %}
+
+This will return facets covering each month that a publish date can fall into,
+for the last year. The facet rows returned in the results will have Range values
+containing the Time range for that particular row.
+
+See the
+[Solr Wiki](http://wiki.apache.org/solr/SimpleFacetParameters#head-068dc96b0dac1cfc7264fe85528d7df5bf391acd)
+for more information on date faceting.
+
+#### Query facets
+
+Field and date facets are useful, but the real ultimate power lies in Solr's
+[query faceting](http://wiki.apache.org/solr/SimpleFacetParameters#head-9e1bf497aa80995da2b8c1ee69378f5eeaeb280d). 
+This allows you to specify an arbitrary set of conditions for each row, making
+the possibilities pretty much endless. Sunspot 0.9 supports building query
+facets using the same DSL that is used for building normal search scope:
+
+{% highlight ruby %}
+search = Sunspot.search(Post) do
+  facet :rating_ranges do
+    row 1.0..2.0 do
+      with :average_rating, 1.0..2.0
+    end
+    row 2.0..3.0 do
+      with :average_rating, 2.0..3.0
+    end
+    row 3.0..4.0 do
+      with :average_rating, 3.0..4.0
+    end
+    row 4.0..5.0 do
+      with :average_rating, 4.0..5.0
+    end
+  end
+end
+{% endhighlight %}
+
+A few things to point out about the above. First, the concept of grouping the
+various rows into a single "facet" is introduced by Sunspot; Solr itself simply
+accepts an undifferentiated set of query facets, with no grouping. I decided to
+introduce the grouping as it seems more intuitive to me, and helps keep the API
+consistent when retrieving facets from the search results. Also, the arguments
+to the <code>#facet</code> and <code>#row</code> methods are not passed on to
+Solr; they're simply there to make it easy to make sense of the results. In
+particular, the argument passed to <code>#facet</code> should be a symbol, and
+it's used to retrieve the facet from the <code>Search#facet</code> method. The
+argument to <code>#row</code> can be whatever you like; it becomes the
+<code>#value</code> associated with that facet row in the results. So, in the
+results from the previous example, we'd see:
+
+{% highlight ruby %}
+ratings_facet = search.facet(:rating_ranges)
+ratings_facet.rows.first.value #=> 3.0..4.0
+{% endhighlight %}
+
+Note that the field facet options aren't supported by query facets; they're
+always ordered by count, zeros are always returned, and there's no limit. If
+there's demand, I'd be happy to support those options in a post-processing
+stage in a later version.
+
+#### Instantiated Facets
+
+It's common to index database foreign keys in Solr; the new release adds
+explicit recognition of that fact where faceting is concerned, allowing you to
+specify that a field references a particular class, and then populate the
+facet row with the instance referenced by the row's value. Instantiated facets
+are lazy-loaded, but when you request any facet row's instance, all of the
+instances for the facet's rows are loaded, so batch loading is still taken
+advantage of.
+
+To specify that a field references a persisted class, just add the
+<code>:references</code> option to the field definition:
+
+{% highlight ruby %}
+Sunspot.setup(Post) do
+  integer :blog_id, :references => Blog
+end
+{% endhighlight %}
+
+Then when you facet by <code>:blog_id</code> field, you'll have access to the
+<code>#instance</code> method on the rows:
+
+{% highlight ruby %}
+search = Sunspot.search(Post) do
+  facet :blog_id
+end
+search.facet(:blog_id).rows.first.instance #=> #<Blog:0xb7e1cd0c>
+{% endhighlight %}
+
+#### Facet by class
+
+If you're performing a search on multiple object types, you may want to facet
+based on the class of the documents. Sunspot now adds the <code>:class</code>
+field to all index setups, and allows faceting on it. The facet row values are
+Class objects:
+
+{% highlight ruby %}
+search = Sunspot.search(Post, Comment) do
+  keywords 'great pizza'
+  facet :class
+end
+search.facet(:class).rows.first.value #=> Post
+{% endhighlight %}
+
+### New features that don't fit into a group
+
+#### Batch indexing
+
+In my company's production application, we perform complex operations that
+initiate Solr indexing from disparate places within the application code.
+However, it's more efficient to send all adds/updates as part of a single
+request; the <code>Sunspot.batch</code> method makes that simple:
+
+{% highlight ruby %}
+Sunspot.batch do
+  Sunspot.index(Post.new)
+  Sunspot.index(Comment.new)
+  Sunspot.index(User.new)
+end
+{% endhighlight %}
+
+When the batch block exits, Sunspot will send all of the indexed documents in
+a single HTTP request.
+
+#### Date field type
+
+Java doesn't have a built-in type that contains date information without time
+information, like Ruby's Date does; neither does Solr. For convenience, the new
+release creates a new <code>date</code> type, which indexes Ruby Date objects.
+Internally, the dates are stored as a time, with the time portion at midnight
+UTC. Facet values and stored values are returned as Ruby Date objects as
+expected.
+
+#### Access to data accessors
+
+Let's say you're running a Solr search against objects that are persisted with
+ActiveRecord; wouldn't it be nice to be able to specify <code>:include</code>
+arguments for the database query? Toward this end, Sunspot now allows you to
+access the accessor for a given class from inside the query DSL; accessors can
+implement any methods they'd like to inform how data should be pulled from
+persistent storage.
+
+For instance, let's say your ActiveRecord adapter's data accessor has an
+<code>#includes=</code> method, which tells it to pass the arguments into
+ActiveRecord's <code>:include</code> option when performing the query. You can
+access that functionality like so:
+
+{% highlight ruby %}
+Sunspot.search(Post, Comment) do
+  adapter_for(Post).includes = [:blog, :comments]
+end
+{% endhighlight %}
+
+Note that even if Post and Comment use the same adapter class (i.e., an
+ActiveRecord adapter), Sunspot will use a separate adapter instance for each,
+so you can safely set different options for each.
+
+#### Easily configure your Solr installation with sunspot-configure-solr
+
+While using the packaged Solr installation is great for development, I don't
+recommend using it in production. The new release includes a new executable
+called <code>sunspot-configure-solr</code>, which writes a schema.xml file to
+the Sunspot installation of your choice, backing up the old schema.xml if it
+exists. <code>sunspot-configure-solr</code> includes a few options for areas
+where you can safely customize your schema:
+
+<dt><code>--tokenizer</code></dt>
+<dd>The tokenizer class to use for fulltext field tokenization; the default is
+<code>solr.StandardTokenizerFactory</code></dd>
+<dt><code>--extra-filters</code></dt>
+<dd>Comma-separated list of extra filters to apply to fulltext fields. These
+will be applied after the default <code>solr.StandardFilterFactory</code> and
+<code>solr.LowerCaseFilterFactory</code>.</dd>
+<dt><code>--dir</code></dt>
+<dd>Solr home directory in which to install the schema file. This directory
+should contain a <code>conf</code> directory (it will be created if not). The
+default is the working directory from which the command is issued.</dd>
+
+The tokenizer and filter classes can be specified with a shorthand: if the name
+passed is unqualified (i.e., doesn't have any periods), it will be prefixed with
+"solr." and suffixed with "FilterFactory" or "TokenizerFactory" respectively:
+
+{% highlight bash %}
+$ sunspot-configure-solr --dir /var/solr --tokenizer com.myapp.MyTokenizerFactory --filters EnglishPorter,com.myapp.MyFilterFactory
+{% endhighlight %}
+
+This will set the tokenizer to <code>com.myapp.MyTokenizerFactory</code> and add
+the extra filters <code>solr.EnglishPorterFilterFactory</code>. Note that more
+advanced Solr users will want to work with the schema file directly; just don't
+change the naming scheme for the dynamic typed fields.
+
+#### RSolr replaces solr-ruby
+
+solr-ruby has been the de facto low-level Solr interaction layer for several
+years; [RSolr](http://github.com/mwmitchell/rsolr) is a newer library that has
+several advantages over solr-ruby:
+
+* It's more actively maintained.
+* It passes queries directly to Solr without interpreting or modifying the
+  parameters; this means that it implicitly supports any query parameters that
+  are supported by Solr (or any Solr extensions that are installed).
+* It gives you the choice between using Net::HTTP, which is slow, and
+  [curb](http://curb.rubyforge.org), which is a Ruby interface to
+  [libcurl](http://curl.haxx.se/libcurl), and is fast. Sunspot uses Net::HTTP
+  for HTTP interaction by default for maximum compatibility, but applications
+  can easily switch to curb by setting
+  <code>Sunspot.config.http_client = :curb</code> (do this before initiating any
+  interaction with Solr).
+
+#### Remove accidental ActiveSupport dependency
+
+Sunspot 0.8 <code>require</code>d WillPaginate into the spec suite by default,
+which in turn loaded ActiveSupport. Because of this, a few places in the code
+were inadvertantly using ActiveSupport extensions, and the specs still passed
+even though they shouldn't have. I modified the spec suite to only load
+WillPaginate if an environment variable is passed, and fixed the broken specs.
+
+### Toward the future
+
+So, what's next, you may wonder! Perhaps you have a few ideas of your own.
+Perhaps they are:
+
+#### Highlighting
+
+Solr supports
+[keyword highlighting](http://wiki.apache.org/solr/HighlightingParameters)
+&mdash; this has never been a big priority for me but I have heard from other
+Sunspot users that it would be a nice thing to have, so I'm hoping to get
+support for that in a future version.
+
+#### LocalSolr support
+
+[LocalSolr](http://www.gissearch.com/localsolr) is a Solr extension that brings
+geographical-based searching to Solr; in particular, results can be restricted
+and sorted by distance from a given lat/long. Do want.
+
+#### Query facet abstraction
+
+I've just begun giving this thought, but it seems pretty clear from the query
+faceting example above that certain common use cases for query facets could be
+abstracted into a more concise API. For instance, wouldn't it be nice to write
+that example as:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  range_facet :average_rating, 1.0..2.0, 2.0..3.0, 3.0..4.0, 4.0..5.0
+end
+{% endhighlight %}
+
+### Install it.
+
+{% highlight bash %}
+$ sudo gem install outoftime-sunspot --source=http://gems.github.com
+{% endhighlight %}
+
+### Be in touch.
+
+My goal for Sunspot has always been for it to become the de facto Solr
+abstraction library for Rubyists. I'm always happy to get feature requests, bug
+reports, and *especially* patches.
+
+* If you notice some missing functionality in Sunspot or have a sweet idea for
+  a new feature, please shoot a message to the
+  [Sunspot mailing list](http://groups.google.com/group/ruby-sunspot).
+* Found a bug? Submit a ticket on
+  [Lighthouse](http://outoftime.lighthouseapp.com/projects/20339-sunspot)
+* Either of the above, and have a patch? Shoot me a pull request on
+  [GitHub](http://github.com/outoftime/sunspot).
