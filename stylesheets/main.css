@@ -5,6 +5,13 @@ body {
 	padding: 0;
 }
 
+blockquote {
+	font-style: italic;
+	color: #333;
+	font-size: 0.9em;
+	text-align: justify;
+}
+
 #main {
 	position: relative;
 	background-color: #fff;
