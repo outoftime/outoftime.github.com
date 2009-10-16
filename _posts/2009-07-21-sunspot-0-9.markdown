@@ -97,7 +97,7 @@ Sunspot.setup(User) do
 end
 {% endhighlight %}
 
-#### [Choose your fields for fulltext search][keyword-fields]
+#### Choose your fields for fulltext search
 
 In Sunspot 0.8, fulltext search always searched all of the text fields. In 0.9,
 you can specify which fields you'd like to search:

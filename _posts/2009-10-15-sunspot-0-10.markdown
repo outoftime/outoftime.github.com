@@ -1,0 +1,380 @@
+---
+title: Sunspot 0.10 released
+layout: post
+---
+
+Late breaking news: Sunspot 0.10 was released about a week ago. Version 0.10
+has a lot of great new features, including support for geographical search
+using LocalSolr, keyword highlighting, and lots of new DisMax features for
+high-precision relevance tuning.
+
+### Installation
+
+Much like all gems, Sunspot is no longer released on GitHub. You can install it
+from RubyForge or Gemcutter:
+
+    sudo gem install sunspot
+
+If you're using Sunspot::Rails, be sure to install the latest version, as it
+has some changes for compatibility with argument changes to the sunspot-solr
+executable.
+
+If you're running a Solr instance besides the one shipped with the
+<code>sunspot-solr</code> executable - including using
+<code>rake sunspot:solr:start</code> with a separate <code>solr/</code>
+directory in Sunspot::Rails - now might be a good time to skip down to the
+[installing LocalSolr in your Solr instance](#installing_localsolr_in_your_solr_instance)
+section. We'll see you back up here when you're done.
+
+### Geographical Search using LocalSolr
+
+LocalSolr is an extension to Solr that provides geographical search
+functionality. As anyone who works on mobile or local-heavy applications can
+tell you, this is pretty cool. Sunspot 0.10 has support for geographical search
+and indexing, and the Solr instance that ships with the gem now has LocalSolr
+and its dependencies already installed.
+
+To index geographical data for your model, just specify the <code>coordinates</code>
+field in the setup:
+
+{% highlight ruby %}
+Sunspot.setup Post do
+  coordinates :lat_lng
+end
+{% endhighlight %}
+
+The models' value for the coordinates should have one of the following pairs of
+attributes:
+
+* first, last (e.g., an Array)
+* lat, lng
+* lat, lon
+* lat, long
+
+Once you've got your geographical data indexed, you can use the
+<code>near</code> method to search within a given radius:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  near [40, -70], 5
+end
+{% endhighlight %}
+
+This will search for posts within 5 miles of the coordinates &lt;40, -70&gt;.
+The first argument takes the same form as the <code>coordinates</code> value
+above; the second argument is always a number of miles. Unfortunately, it does
+not appear that LocalSolr can handle a distance of less than one mile, so
+hopefully you're not running a CIA satellite or anything.
+
+One other big gotcha with LocalSolr: unfortunately, the current stable release
+neither supports filter queries nor subqueries; this means that there is no way
+(that I know of) to use both regular boolean filters and a dismax query, which
+is what Sunspot uses for keyword search. So, Sunspot will fail fast if you try
+to do a query using both a fulltext and a local component. I've heard that the
+trunk version of LocalSolr does support filter queries; I will definitely be
+investigating and I hope to release a future version of Sunspot without this
+limitation.
+
+### Fine-tuning fulltext relevance with more dismax parameters
+
+One big focus of this release is giving access to all of Solr's powerful dismax
+features. In order to do so, Sunspot 0.10 introduces a fulltext block, which
+presents a DSL for fine-tuning fulltext queries.
+
+This block is invoked with the <code>fulltext</code> method, which is the
+awesome new name for the <code>keywords</code> method (don't worry;
+<code>keywords</code> is still aliased).
+
+The <code>fields</code> method allows you to specify which fields you wish to
+perform fulltext search on, optionally giving a specific boost to each field:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  fulltext 'boost control' do
+    fields :title, :body => 0.75
+  end
+end
+{% endhighlight %}
+
+The above will search only the <code>title</code> and <code>body</code> fields,
+applying a boost of 0.75 to the <code>body</code> field (<code>title</code> will
+have a default boost).
+
+To set per-field boost without restricting which fields are searched (i.e.,
+search all configured text fields), just use the <code>field_boost</code>:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  fulltext 'boost control' do
+    boost_fields :title => 2.0, :body => 0.75
+  end
+end
+{% endhighlight %}
+
+Phrase fields add an extra boost to fields in which all the fulltext keywords
+appear in the field - it's great for titles and other high-relevance fields:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  fulltext 'phrase fields' do
+    phrase_fields :title => 2.5
+  end
+end
+{% endhighlight %}
+
+Boost queries allow extra boost to be applied to documents which match an
+arbitrary set of conditions:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  fulltext 'boost query' do
+    boost 2.0 do
+      with :featured, true
+    end
+  end
+end
+{% endhighlight %}
+
+The above will apply a boost of 2.0 to featured posts.
+
+### Fulltext highlighting
+
+What's better than giving your users the most relevant results for their keyword
+searches? Showing them just what in the documents matched the search, of course.
+Solr comes with built-in keyword highlighting; you can get a full explanation of
+the highlighting features here: http://wiki.apache.org/solr/HighlightingParameters
+
+Simple highlighting can be activated simply by passing
+<code>:highlight => true</code> as an option to the <code>keywords</code> method:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  keywords 'great pizza', :highlight => true
+end
+{% endhighlight %}
+
+If you'd like to choose specific fields to highlight, pass an array of field
+names instead of <code>true</code>:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  keywords 'great pizza', :highlight => %w(title body)
+end
+{% endhighlight %}
+
+More advanced highlighting options can be passed to the <code>highlight</code>
+method inside the <code>keywords</code> DSL block:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  keywords 'great pizza' do
+    highlight :title, :body, :max_snippets => 3, :fragment_size => 200
+  end
+end
+{% endhighlight %}
+
+The <code>highlight</code> method accepts the following options:
+
+<dt><code>:max_snippets</code></dt>
+<dd>The maximum number of highlighted snippets to return per field.</dd>
+<dt><code>:fragment_size</code></dt>
+<dd>The maximum size of a text fragment to consider for highlighting</dd>
+<dt><code>:merge_contiguous_fragments</code></dt>
+<dd>If two highlighted fragments are adjacent to one another, merge them into a
+single fragment.</dd>
+<dt><code>:phrase_highlighter</code></dt>
+<dd>From the Solr wiki: "Use SpanScorer to highlight phrase terms only when
+they appear within the query phrase in the document. Default is false." Whatever
+that means.</dd>
+<dt><code>:require_field_match</code></dt>
+<dd>Require that the field actually matched the query (instead of simply
+containing the words being searched). Requires <code>:phrase_highlighter</code>
+to be true.</dd>
+
+#### Using highlights
+
+If you've performed your search with highlights, you access them using the
+<code>highlights</code> method of the Sunspot::Search::Hit object.
+<code>highlights</code> can take a field name as an argument, in which case it
+will only return highlights for the specified field; otherwise, it will return
+all highlights for the given hit.
+
+The objects returned by the <code>highlights</code> method allow deferred
+formatting, which is to say your view layer can decide how to format the
+highlights, when it's time to display them:
+
+{% highlight erb %}
+<div class="results">
+  <% @search.hits.each do |hit| %>
+    <div class="result">
+      <h3><%= hit.instance.title %></h3>
+      <p>
+        <%= hit.highlights(:body).first.format { |phrase| "<span class=\"highlight\">#{phrase}</span>" } %>
+      </p>
+    </div>
+  <% end %>
+</div>
+{% endhighlight %}
+
+Note that in order for highlighting to work, the highlighted field needs to be
+a stored text field (pass <code>:stored => true</code> in the field definition).
+
+### Default search-time boost
+
+While index-time boost is useful, it means that any change to field boost
+requires a reindex of your data. An alternative is to set a default search-time
+boost in the setup:
+
+{% highlight ruby %}
+Sunspot.setup(Post) do
+  text :title, :default_boost => 2.0
+end
+{% endhighlight %}
+
+This means that a boost of 2.0 will be applied to the title field in all
+searches, unless the boost is specified in the search itself. This will, of
+course, only occur for searches issued with Sunspot.
+
+### Prefix queries
+
+By popular demand, Sunspot 0.10 supports prefix queries, using the
+<code>starts_with</code> method in the DSL:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  with(:title).starts_with('best')
+end
+{% endhighlight %}
+
+### Restrict field facet to a list of interesting values
+
+Let's say I'm faceting by category, but I'm not interested in all categories;
+I just want to show the top-level ones. Requesting a field facet for
+<code>category_id</code> will waste resources both at the Solr level and
+potentially at the Sunspot level (particularly if you're using reference facets)
+loading rows you're not interested in. Sunspot 0.10 introduces an
+<code>:only</code> option to the <code>facet</code> method, which only returns
+facets for the values you want. Use it like this:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  facet :category_ids, :only => Category.top_level.map { |category| category.id }
+end
+{% endhighlight %}
+
+Under the hood, this doesn't actually issue a field facet request at all -
+instead it constructs a set of query facets, which are built so that, from the
+perspective of the Sunspot API, act exactly like a field facet. This is one of
+the rare places where Sunspot actually extends Solr's functionality, instead of
+simply encapsulating it. I hope to build more of these in the future.
+
+### Query facets support all facet options
+
+Query facets now support all the options that you're used to for field facets.
+The difference here is that the options are applied after the search is run,
+while building the Sunspot::Facet object. The end result, however, is the same.
+
+### Scope by text fields
+
+In possibly my least favorite feature of Sunspot 0.10, it is now possible to
+apply scope to text fields, using the <code>text_fields</code> block. This works
+exactly like normal scope, except that the field names passed refer to text
+fields, instead of attribute fields. Since text fields are tokenized, the
+behavior here is not always intuitive; be sure to read up on tokenization, and
+expect that your mileage may vary:
+
+{% highlight ruby %}
+Sunspot.search(Post) do
+  text_fields do
+    with(:body, 'Short body')
+  end
+end
+{% endhighlight %}
+
+### Other enhancements
+
+* You can safely execute a search multiple times, with or without modification.
+* The sunspot-solr executable accepts <code>-l</code> (log level) and
+  <code>--log-file</code> options, which control Solr logging output.
+* Using a field in a search requires only that it exists in at least one type
+  under search, and that it has a consistent configuration for all the searched
+  types that had it. Before, Sunspot required that all searched types had the
+  field, which was unnecessarily restrictive.
+* Sunspot no longer depends on the Haml or Optiflag gems. Ruby built-ins FTW.
+
+### Installing LocalSolr in your Solr instance
+
+#### Add the LocalSolr libraries
+
+In the solr home directory (the one that contains the <code>conf/</code>
+directory), create a directory called <code>lib/</code>, if there isn't one
+already. Copy the the contents of
+<code>/path/to/your/gems/sunspot-0.10.2/solr/solr/lib</code> into that
+directory.
+
+#### Add extra handlers to solrconfig.xml
+
+Add the following lines somewhere inside the <code>config</code> node:
+
+{% highlight xml %}
+<updateRequestProcessorChain>
+  <processor class='com.pjaol.search.solr.update.LocalUpdateProcessorFactory'>
+    <str name='latField'>lat</str>
+    <str name='lngField'>long</str>
+    <int name='startTier'>9</int>
+    <int name='endTier'>16</int>
+  </processor>
+  <processor class='solr.RunUpdateProcessorFactory'></processor>
+  <processor class='solr.LogUpdateProcessorFactory'></processor>
+</updateRequestProcessorChain>
+<searchComponent class='com.pjaol.search.solr.component.LocalSolrQueryComponent' name='localsolr'>
+  <str name='latField'>lat</str>
+  <str name='lngField'>long</str>
+</searchComponent>
+<requestHandler class='org.apache.solr.handler.component.SearchHandler' name='geo'>
+  <arr name='components'>
+    <str>localsolr</str>
+    <str>facet</str>
+    <str>mlt</str>
+    <str>highlight</str>
+    <str>debug</str>
+  </arr>
+</requestHandler>
+{% endhighlight %}
+
+You're doing great. One more step.
+
+#### Add extra fields to your schema
+
+Add this inside the <code>types</code> node:
+
+{% highlight xml %}
+<fieldtype name="sdouble" class="solr.SortableDoubleField" omitNorms="true"/>
+{% endhighlight %}
+
+Then add this inside the <code>fields</code> node:
+
+{% highlight xml %}
+<field name="lat"        type="sdouble" indexed="true" stored="true"  multiValued="false" />
+<field name="long"       type="sdouble" indexed="true" stored="true"  multiValued="false" />
+<dynamicField name="_local*" type="sdouble" indexed="true" stored="false" multiValued="false" />
+{% endhighlight %}
+
+Great job! You're done.
+
+### To the future!
+
+Well, that's all for Sunspot 0.10. I'm hoping the next release will be 1.0; the
+focus will be working out any bugs and inconsistencies that come up, and making
+the experience of using and managing Sunspot and Solr as smooth as possible.
+Here are a few things I have in mind:
+
+* A tool to read an existing schema and solrconfig, and make the minimum changes
+  to make them compatible with Sunspot's needs.
+* A framework for testing code that uses Sunspot - basically, methods to ask a
+  search whether a given set of search parameters has been applied.
+* Local search without limitations.
+
+Up next, though, is a big new release of Sunspot::Rails - lots of great patches
+from great committers have been coming in, and I'm very excited to get them all
+into a release. Stay tuned!
