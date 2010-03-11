@@ -1,5 +1,5 @@
 ---
-title: Simple, powerful fulltext search with Solr and Sunspot [GoRuco 2010]
+title: Simple, powerful fulltext search with Solr and Sunspot [GoRuCo 2010]
 layout: main
 ---
 
