@@ -1,0 +1,49 @@
+---
+title: Simple, powerful fulltext search with Solr and Sunspot [GoRuco 2010]
+layout: main
+---
+
+#### Abstract
+
+Fulltext search is an indispensible component of most modern web applications.
+The Solr fulltext search engine, used in conjunction with the Sunspot Ruby
+library for integration, makes integrating powerful search features into a
+Ruby application dead simple. Learn how to integrate Solr and Sunspot into a
+Rails app, and explore some of the powerful search features that Solr exposes.
+
+#### About the presenter
+
+Mat Brown is a senior software engineer for [Patch Media](http://www.patch.com),
+a network of hyperlocal news and information sites serving 39 (and counting!)
+towns across the United States. Mat has worked in Ruby and Rails for two years,
+having worked on Java and PHP projects previously. As part of his job at Patch,
+Mat is the creator and maintainer of the
+[Sunspot](http://outoftime.github.com/sunspot) library, which provides
+expressive, powerful integration for Solr in Ruby applications. Mat is also the
+author of [solr-spatial-light](http://github.com/outoftime/solr-spatial-light),
+a Solr plugin for exposing spatial search via `lucene-spatial` in Solr 1.4;
+[clickistrano](http://github.com/outoftime/clickistrano), a Sinatra app
+providing a simple web front-end for Capistrano deployments; and
+[several other projects](http://github.com/outoftime).
+
+Mat lives in Brooklyn, NY, and works in Patch's office in SoHo.
+
+#### Presentation Topics
+
+* Sunspot::Rails quickstart: Integrating keyword search into your Rails app in
+  five minutes
+* Solr primer: how it works, how it's different from a relational database, and
+  how it's different from (and better than, in many situations!) Sphinx
+* Building a powerful drill-down search interface using facets
+* Fine-tuning keyword search relevance and exposing keyword highlights
+* Scaling Solr: commit frequency and assumed inconsistency; Solr replication;
+  and Solr sharding
+
+#### Links
+
+* [Sunspot home page](http://outoftime.github.com/sunspot)
+* [Sunspot wiki](http://wiki.github.com/outoftime/sunspot)
+* [Sunspot on GitHub](http://github.com/outoftime/sunspot)
+* [Sunspot API Docs](http://outoftime.github.com/sunspot/docs)
+* [Sunspot::Rails API Docs](http://outoftime.github.com/sunspot/rails/docs)
+* [Solr Wiki](http://wiki.apache.org/solr)
