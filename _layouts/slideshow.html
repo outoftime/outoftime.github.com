@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>{{ page.title }}</title>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/slideshow.css" />
+		<link rel="stylesheet" type="text/css" href="/stylesheets/aslideshow.css" />
+		<link rel="stylesheet" type="text/css" href="/stylesheets/ruby.css" />
+		<script type="text/javascript" src="/javascripts/jquery-1.4.1.min.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.aslideshow.min.js"></script>
+		<script type="text/javascript">//<![CDATA[
+			$(function() {
+				$('#slideShow').slideshow({
+					width:640,
+					height:480,
+					title:true,
+					panel:false,
+					effecttime:100,
+					nextclick:true,
+					playframe: false
+				});
+			});
+		//]]></script>
+	</head>
+	<body>
+		{{ content }}
+	</body>
+</html>
