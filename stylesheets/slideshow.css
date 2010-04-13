@@ -60,9 +60,12 @@
 	font-size: inherit;
 }
 
+#slideShow code {
+	font-size: 0.8em;
+}
+
 #slideShow pre code {
 	width: 100%;
-	font-size: 0.8em;
 }
 
 #slideShow p.definition {
