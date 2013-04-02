@@ -126,6 +126,24 @@ page.restore_version(page.previous_versions.first) #=&gt;
                 </section>
 
                 <section>
+                <h1>Concurrent Modification</h1>
+                <section>
+                <p>There's no built-in handling for concurrent modification.</p>
+                <p>Things would get pretty screwed up if two patches were made
+                to the same version.</p>
+                </section>
+
+                <section>
+                <p>Easy answer: optimistic locking; linear version history</p>
+                </section>
+
+                <section>
+                <p>Awesome answer: store parent version in each patch; tree
+                revision history</p>
+                </section>
+                </section>
+
+                <section>
                 <h1>That is all.</h1>
                 </section>
 
