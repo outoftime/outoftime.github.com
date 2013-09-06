@@ -18,6 +18,9 @@ io.sockets.on('connection', function(socket) {
 	socket.on('slidechanged', function(slideData) {
 		socket.broadcast.emit('slidedata', slideData);
 	});
+	socket.on('fragmentchanged', function(fragmentData) {
+		socket.broadcast.emit('fragmentdata', fragmentData);
+	});
 });
 
 app.configure(function() {
@@ -27,6 +30,7 @@ app.configure(function() {
 });
 
 app.get("/", function(req, res) {
+	res.writeHead(200, {'Content-Type': 'text/html'});
 	fs.createReadStream(opts.baseDir + '/index.html').pipe(res);
 });
 

@@ -1,0 +1,17 @@
+.reveal table, .reveal table th, .reveal table td {
+    border: 2px solid gray;
+}
+
+.reveal table {
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.reveal table th, .reveal table td {
+    padding: 0.2em;
+    font-size: 0.7em;
+}
+
+body.print-pdf aside.notes {
+    display: block;
+}

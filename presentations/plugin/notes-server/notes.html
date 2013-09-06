@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="utf-8">
 
+		<meta name="viewport" content="width=1150">
+
 		<title>reveal.js - Slide Notes</title>
 
 		<style>
@@ -14,6 +16,7 @@
 				font-size: 24px;
 				width: 640px;
 				margin-top: 5px;
+				clear: left;
 			}
 
 			#wrap-current-slide {
@@ -27,13 +30,13 @@
 				width: 1280px;
 				height: 1024px;
 				border: none;
-				
+
 				-webkit-transform-origin: 0 0;
 				   -moz-transform-origin: 0 0;
 				    -ms-transform-origin: 0 0;
 				     -o-transform-origin: 0 0;
 				        transform-origin: 0 0;
-				 
+
 				-webkit-transform: scale(0.5);
 				   -moz-transform: scale(0.5);
 				    -ms-transform: scale(0.5);
@@ -53,7 +56,7 @@
 				width: 1280px;
 				height: 1024px;
 				border: none;
-				
+
 				-webkit-transform-origin: 0 0;
 				   -moz-transform-origin: 0 0;
 				    -ms-transform-origin: 0 0;
@@ -99,7 +102,7 @@
 		<div id="notes"></div>
 
 		<script src="/socket.io/socket.io.js"></script>
-                <script src="/lib/js/showdown.js"></script>
+		<script src="/plugin/markdown/marked.js"></script>
 
 		<script>
 		var socketId = '{{socketId}}';
@@ -112,15 +115,26 @@
 			// ignore data from sockets that aren't ours
 			if (data.socketId !== socketId) { return; }
 
-                        if (data.markdown) {
-                          notes.innerHTML = (new Showdown.converter()).makeHtml(data.notes);
-                        }
-                        else {
-                          notes.innerHTML = data.notes;
-                        }
+			if (data.markdown) {
+				notes.innerHTML = marked(data.notes);
+			}
+			else {
+				notes.innerHTML = data.notes;
+			}
 
 			currentSlide.contentWindow.Reveal.slide(data.indexh, data.indexv);
 			nextSlide.contentWindow.Reveal.slide(data.nextindexh, data.nextindexv);
+		});
+		socket.on('fragmentdata', function(data) {
+			// ignore data from sockets that aren't ours
+			if (data.socketId !== socketId) { return; }
+
+			if (data.fragment === 'next') {
+				currentSlide.contentWindow.Reveal.nextFragment();
+			}
+			else if (data.fragment === 'previous') {
+				currentSlide.contentWindow.Reveal.prevFragment();
+			}
 		});
 		</script>
 
