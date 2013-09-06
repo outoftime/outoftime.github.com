@@ -47,8 +47,10 @@
                 <h3>github.com/outoftime</h3>
                 <h3>Rap Genius</h3>
                 <aside class="notes">
-                <p>Used Cassandra/CQL2 at Brewster</p>
-                <p>Maintain Cequel ORM</p>
+                <ul>
+                <li>used Cassandra/CQL2 at Brewster</li>
+                <li>maintain Cequel ORM</li>
+                </ul>
                 </aside>
                 </section>
 
@@ -60,9 +62,13 @@
                 <section>
                 <h1>Scalability</h1>
                 <img src="images/nettop.jpg">
+
                 <aside class="notes">
-                <p>In a traditional relational database, all your data lives on
-                one machine. This is usually fine at first.</p>
+                <ul>
+                <li>in a relational database, all your data lives on one
+                machine</li>
+                <li>in the early stages, any hardware will do</li>
+                </ul>
                 </aside>
                 </section>
 
@@ -70,8 +76,9 @@
                 <h1>Scalability</h1>
                 <img src="images/server.jpg">
                 <aside class="notes">
-                <p>As your data set grows, you need bigger and bigger hardware
-                to run your single-instance database.</p>
+                <ul>
+                <li>as your data set grows and access volume increases, better
+                hardware needed</li>
                 </aside>
                 </section>
 
@@ -79,26 +86,40 @@
                 <h1>Scalability</h1>
                 <img src="images/supercomputer.jpg">
                 <aside class="notes">
-                <p>Eventually your hardware requirements get entirely out of
-                hand.</p>
+                <ul>
+                <li>you can scale vertically for a while</li>
+                <li>but eventually your requirements get out of hand</li>
+                </ul>
                 </aside>
-                </section>
                 </section>
 
                 <section>
                 <h1>Failure Tolerance</h1>
                 <img src="images/tiefighter.jpg">
                 <aside class="notes">
-                You also never know when a server is going to go down. In a
-                single-master data store, losing your master means
-                downtime.
+                <ul>
+                <li>you never know when a server is going to go down</li>
+                <li>in a single-master data store, losing your master =
+                downtime</li>
+                </ul>
                 </aside>
                 </section>
 
                 <section>
                 <h1>Distributed Databases</h1>
                 <img src="images/server-ring.jpg">
+
                 <aside class="notes">
+                <ul>
+                <li>distributed store solves both problems</li>
+                <li>multiple copies replicated across nodes</li>
+                <li>scale out by adding machines</li>
+                <li>masterless = node failures are transparent to the
+                client</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 A distributed data store can solve both of these problems. You
                 can scale out horizontally, simply by adding more machines to
                 the ring. And in a masterless data store, a node going down is
@@ -109,17 +130,34 @@
                 <section>
                 <h1>Write Optimization</h1>
                 <img src="images/firehose.jpg">
+
                 <aside class="notes">
+                <ul>
+                <li>optimized for large write volumes</li>
+                <li>files never modified on disk, only appending or new ones created</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 Cassandra is optimized for large write volumes. Its
                 log-structured storage never updates existing files on disk; it
                 only creates new files.
                 </side>
+                </section>
                 </section>
 
                 <section>
                 <section>
                 <h1>OK, but why Cassandra?</h1>
                 <img src="images/fault-tolerance.png">
+
+                <aside class="notes">
+                <ul>
+                <li>lots of distributed data stores available
+                <ul><li>Riak</li><li>HBase</li><li>Voldemort</li></ul>
+                </li>
+                <li>often difficult and unfamiliar to work with</li>
+                </ul>
                 </section>
 
                 <section>
@@ -141,7 +179,15 @@
                         <td>Stately, plump Buck Mulligan came from the stairhead...</td>
                     </tr>
                 </table>
+
                 <aside class="notes">
+                <ul>
+                <li>data structured in tables, rows, and columns</li>
+                <li>looks like a relational database</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 Cassandra structures data in tables, rows, and columns, just
                 like an SQL database.
                 </aside>
@@ -154,7 +200,16 @@ SELECT title, body
 FROM documents
 WHERE id = 1
                 </code></pre>
+
                 <aside class="notes">
+                <ul>
+                <li>CQL is an SQL-like language, very similar grammar and
+                semantics</li>
+                <li>CQL3 is the most SQL-like</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 Even better, data is accessed and manipulated using CQL, a query
                 language inspired by SQL. So you can get all the benefits of a
                 write-optimized distributed database while still modeling and
@@ -173,7 +228,32 @@ WHERE id = 1
                 <p class="fragment" data-fragment-index="0">Consistent</p>
                 <p class="fragment" data-fragment-index="1">Isolated</p>
                 <p class="fragment" data-fragment-index="2">Durable</p>
+
                 <aside class="notes">
+                <ul>
+                <li>Atomic
+                    <ul>
+                    <li>Batch statements applied atomically</li>
+                    <li>But no concept of a transaction spanning multiple queries</li>
+                    </ul>
+                </li>
+                <li>Consistent: No data integrity constraints
+                    <ul>
+                    <li>non-NULL columns</li>
+                    <li>unique indexes</li>
+                    <li>foreign keys</li>
+                    </ul>
+                    <ul>
+                    <li>INSERT at an existing primary key will just overwrite</li>
+                    <li>Cassandra 2.0 does have conditional inserts</li>
+                    </ul>
+                </li>
+                <li>Isolated: writes are isolated at the "Wide Row" level</li>
+                <li>Durable: Write is only successful once durably written</li>
+                </aside>
+
+
+                <aside class="explanation">
                 <p>A series of statements sent as a batch will be applied
                 atomically, but there is no concept of multi-statement
                 transactions, ROLLBACK, etc.</p>
@@ -207,7 +287,12 @@ CREATE TABLE blogs (
     description varchar
 )
                 </code></pre>
+
                 <aside class="notes">
+                Looks just like a relational database table
+                </aside>
+
+                <aside class="explanation">
                 Pretty simple – looks exactly like an SQL table. Note that
                 the primary key is text: Cassandra doesn't have
                 auto-incrementing primary keys, so you will either want to use a
@@ -232,7 +317,29 @@ CREATE INDEX ON posts (author_id)
                 <pre class="fragment"><code data-trim class="language-sql">
 ALTER TABLE posts ADD categories set&lt;text&gt;
                 </code></pre>
+
+
                 <aside class="notes">
+                <ul>
+                <li>compound primary key</li>
+                <li>blog_subdomain is "partition key"; groups related rows.</li>
+                <li>parent-child relationship.</li>
+                <li>id is a "clustering column"; rows are stored sorted by this</li>
+                <li>No auto-incrementing primary keys; use UUIDs or natural keys</li>
+                </ul>
+
+                <ul>
+                <li>Secondary indices: don't rely too heavily, best when each
+                value has lots of rows</li>
+                </ul>
+
+                <ul>
+                <li>Collection columns: list, set, map</li>
+                <li>Can be updated atomically, but are always read in full.</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 <p>Here we have a more interesting example: a compound primary key.
                 The primary key is comprised of two columns, which play
                 different roles. The first column of the key is called the
@@ -255,6 +362,15 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 <section>
                 <section>
                 <h1>Under the hood</h1>
+
+                <aside class="notes">
+                <ul>
+                <li>CQL is an abstraction</li>
+                <li>interface to the underlying representation via Thrift</li>
+                <li>no need to use it, but important to understand</li>
+                </ul>
+                </aside>
+
                 </section>
                 <section>
                 <h1>Column families</h1>
@@ -264,7 +380,15 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
   "relational" =&gt; {2 =&gt; 'SQLite', 7 =&gt; 'MySQL'}
 }
                 </code></pre>
+
                 <aside class="notes">
+                <ul>
+                <li>like a hash whose values are nested hashes</li>
+                <li>inner hashes maintain keys in sorted order</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 Under the hood, Cassandra stores data in simple structures
                 called column families. You can think of a column family as a
                 hash, where each value is a nested hash whose keys are kept
@@ -276,10 +400,10 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 <h1>Column Families</h1>
                 <table>
                     <tr>
-                        <th rowspan="2"><code>big-data</code></th>
-                        <th>1</td>
-                        <th>2</td>
-                        <th>4</td>
+                        <th rowspan="2" style="background-color: dimgray"><code>big-data</code></th>
+                        <th style="background-color: darkslategray">1</td>
+                        <th style="background-color: darkslategray">2</td>
+                        <th style="background-color: darkslategray">4</td>
                     </tr>
                     <tr>
                         <td>Cassandra</td>
@@ -287,16 +411,29 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                         <td style="border-bottom: 10px solid gray">HBase</td>
                     </tr>
                     <tr style="border-top: 10px solid gray">
-                        <th rowspan="2"><code>relational</th>
-                        <th>2</td>
-                        <th>7</td>
+                        <th rowspan="2" style="background-color: dimgray"><code>relational</th>
+                        <th style="background-color: darkslategray">2</td>
+                        <th style="background-color: darkslategray">7</td>
                     </tr>
                     <tr>
                         <td>SQLite</td>
                         <td>MySQL</td>
                     </tr>
                 </table>
+
                 <aside class="notes">
+                <ul>
+                <li>underlying representation
+                <li>called a "column family"</li>
+                <li>"column" idea misleading here; each row can have different
+                column "names"</li>
+                <li>column names can be of any type; here they are integers</li>
+                <li>a row can hold about 2 billion columns</li>
+                <li>called a "wide row"</li>
+                </ul>
+                </aside>
+
+                <aside class="explanation">
                 Another way of looking at the same data. Note that the column
                 headers don't have to be consistent between rows. Each row of a
                 column family can get up to about 2 billion entries without much
@@ -307,10 +444,10 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 <h1>Wide rows stick together</h1>
                 <table style="position: relative; top: 1em; left: -10em">
                     <tr>
-                        <th rowspan="2"><code>big-data</code></th>
-                        <th>1</td>
-                        <th>2</td>
-                        <th>4</td>
+                        <th rowspan="2" style="background-color: dimgray"><code>big-data</code></th>
+                        <th style="background-color: darkslategray">1</td>
+                        <th style="background-color: darkslategray">2</td>
+                        <th style="background-color: darkslategray">4</td>
                     </tr>
                     <tr>
                         <td>Cassandra</td>
@@ -320,20 +457,23 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 </table>
                 <table style="position: relative; top: 5em; left: 5em">
                     <tr>
-                        <th rowspan="2"><code>relational</th>
-                        <th>2</td>
-                        <th>7</td>
+                        <th rowspan="2" style="background-color: dimgray"><code>relational</th>
+                        <th style="background-color: darkslategray">2</td>
+                        <th style="background-color: darkslategray">7</td>
                     </tr>
                     <tr>
                         <td>SQLite</td>
                         <td>MySQL</td>
                     </tr>
                 </table>
+
                 <aside class="notes">
-                Another way of looking at the same data. Note that the column
-                headers don't have to be consistent between rows. Each row of a
-                column family can get up to about 2 billion entries without much
-                trouble. We call these "wide rows".
+                <ul>
+                <li>each wide row lives in a contiguous space on disk</li>
+                <li>data on disk is in sorted order</li>
+                <li>querying for a range of columns requires one sequential scan
+                of the disk; very efficient</li>
+                </ul>
                 </aside>
                 </section>
 
@@ -346,6 +486,14 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
 (2013-07-08, "narwhal")
 (2013-09-13, "giant clam")
                 </code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>support for compound types</li>
+                <li>sorted lexically, much like an array</li>
+                <li>we'll see compound types used for wide row column
+                headers</li>
+                </ul>
                 </section>
 
                 <section>
@@ -377,6 +525,13 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                         <td>In a traditional relational database, all your data...</td>
                     </tr>
                 </table>
+
+                <aside class="notes">
+                <ul>
+                <li>here's how the blog looks logically, in the CQL
+                structure</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section data-transition="none">
@@ -414,6 +569,17 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                     <div style="color: chartreuse">Data column name</div>
                     <div style="color: orange">Data column value</div>
                 </p>
+
+                <aside class="notes">
+                <ul>
+                <li>let's separate out the different parts of the table
+                here</li>
+                <li>partition key groups related data together</li>
+                <li>clustering column – part of the primary key – provides a
+                sort order</li>
+                <li>data columns have names and values</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section>
@@ -448,6 +614,17 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                     <div style="color: chartreuse">Data column name</div>
                     <div style="color: orange">Data column value</div>
                 </p>
+
+                <aside class="notes">
+                <ul>
+                <li>here's the same information under the hood</li>
+                <li>all the data with a given partition key lives in the same
+                wide row</li>
+                <li>column headers are a compound data type containing
+                clustering key value and data column name</li>
+                <li>column values are data column values</li>
+                </ul>
+                </aside>
                 </section>
                 </section>
 
@@ -460,6 +637,15 @@ WHERE blog_subdomain = "mycat"
 ORDER BY id DESC
 LIMIT 10
                 </code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>design your schema around your access patterns</li>
+                <li>most basic access pattern of a blog: most recent posts</li>
+                <li>you can even set up the table to order the clustering column
+                in reverse, making this query even more efficient</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section>
@@ -470,6 +656,13 @@ WHERE blog_subdomain = "mycat"
 AND id &gt;= 2013-09-01
 AND id &lt;= 2013-09-31
                 </code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>range queries also another access pattern you can design
+                around</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section>
@@ -479,13 +672,80 @@ SELECT id, title FROM posts
 WHERE author_id = "9cafe670-16fc-11e3-8ffd-0800200c9a66"
 LIMIT 10
                 </code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>use secondary indices to fill in the gaps</li>
+                <li>don't rely on them for your core access patterns</li>
+                </ul>
+                </aside>
                 </section>
+
+                <section>
+                <h1>Write without reading</h1>
+                <pre><code data-trim class="language-sql">
+UPDATE posts
+SET title = 'Hungry Cat', categories = categories + {'Dinner Time'}
+WHERE blog_subdomain = 'mycat' AND id = 2013-07-08
+                </code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>since cassandra is optimized for writes, you will be most
+                efficient if you write without reading</li>
+                <li>this can be difficult if you have domain model-level logic
+                like validations</li>
+                <li>operations on collection columns are atomic and are done
+                without reading under the hood</li>
+                </ul>
+                </aside>
+                </section>
+
+                <section>
+                <h1>Simple primary keys</h1>
+                <div style="position:relative">
+                <pre><code class="language-sql">
+SELECT * FROM blogs
+ORDER BY subdomain ASC
+                </code></pre>
+                <div class="fragment">
+                <h2 style="font-size: 3em; position: absolute; top: 0.1em; left: 0; padding-left: 1em; color: red; width: 100%; height: 100%; text-align: left; opacity: 0.7">NOPE</h2>
+                </div>
+                </div>
+
+                <div style="position: relative">
+                <pre class="fragment"><code class="language-sql">
+SELECT * FROM blogs
+WHERE subdomain &gt; "mycat"
+                </code></pre>
+                <div class="fragment">
+                <h2 style="font-size: 3em; position: absolute; top: 0.1em; left: 0; padding-left: 1em; color: red; width: 100%; height: 100%; text-align: left; opacity: 0.7">NOPE</h2>
+                </div>
+                </div>
+
+                <aside class="notes">
+                <ul>
+                <li>simple primary keys should only be used for top-level data</li>
+                <li>ideally, you are only ever querying for one of these at a
+                time, using the primary key value</li>
+                <li>since there is no clustering column, there are no range
+                queries or sort ordering</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section>
                 <h1>Let's make this easy</h1>
                 <p>http://github.com/cequel/cequel</p>
                 <pre><code class="language-bash">$ gem install cequel --pre</code></pre>
+
+                <aside class="notes">
+                <ul>
+                <li>cequel is a model layer for CQL</li>
+                <li>release candidate of cequel 1.0; supports CQL3, parent-child
+                relationships, collections, write-without-reading</li>
+                </ul>
+                </aside>
                 </section>
 
                 <section>

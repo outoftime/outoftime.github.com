@@ -12,6 +12,6 @@
     font-size: 0.7em;
 }
 
-body.print-pdf aside.notes {
-    display: block;
+aside.explanation {
+    display: none;
 }
