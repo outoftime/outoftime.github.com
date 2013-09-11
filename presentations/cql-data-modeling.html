@@ -60,76 +60,21 @@
 
                 <section>
                 <section>
-                <h1>Scalability</h1>
-                <img src="images/nettop.jpg">
+                <h2>Distributed and Masterless</h2>
+                <img src="images/cluster.png">
 
                 <aside class="notes">
                 <ul>
-                <li>in a relational database, all your data lives on one
-                machine</li>
-                <li>in the early stages, any hardware will do</li>
+                <li>easily scale out to accommodate more data or volume</li>
+                <li>losing a node is transparent to the client</li>
+                <li>client can read from any node(s) in the cluster</li>
                 </ul>
                 </aside>
                 </section>
 
                 <section>
-                <h1>Scalability</h1>
-                <img src="images/server.jpg">
-                <aside class="notes">
-                <ul>
-                <li>as your data set grows and access volume increases, better
-                hardware needed</li>
-                </aside>
-                </section>
-
-                <section>
-                <h1>Scalability</h1>
-                <img src="images/supercomputer.jpg">
-                <aside class="notes">
-                <ul>
-                <li>you can scale vertically for a while</li>
-                <li>but eventually your requirements get out of hand</li>
-                </ul>
-                </aside>
-                </section>
-
-                <section>
-                <h1>Failure Tolerance</h1>
-                <img src="images/tiefighter.jpg">
-                <aside class="notes">
-                <ul>
-                <li>you never know when a server is going to go down</li>
-                <li>in a single-master data store, losing your master =
-                downtime</li>
-                </ul>
-                </aside>
-                </section>
-
-                <section>
-                <h1>Distributed Databases</h1>
-                <img src="images/server-ring.jpg">
-
-                <aside class="notes">
-                <ul>
-                <li>distributed store solves both problems</li>
-                <li>multiple copies replicated across nodes</li>
-                <li>scale out by adding machines</li>
-                <li>masterless = node failures are transparent to the
-                client</li>
-                </ul>
-                </aside>
-
-                <aside class="explanation">
-                A distributed data store can solve both of these problems. You
-                can scale out horizontally, simply by adding more machines to
-                the ring. And in a masterless data store, a node going down is
-                typically transparent to clients.
-                </aside>
-                </section>
-
-                <section>
-                <h1>Write Optimization</h1>
-                <img src="images/firehose.jpg">
+                <h1>Optimized for writes</h1>
+                <img src="images/firehose.jpg"><!-- FIXME -->
 
                 <aside class="notes">
                 <ul>
@@ -222,53 +167,70 @@ WHERE id = 1
                 <section>
                 <h1>Why not Cassandra?</h1>
                 </section>
+
                 <section>
-                <h1>A<span class="fragment">C</span><span class="fragment">I</span><span class="fragment">D</span></h1>
-                <p>Atomic</p>
-                <p class="fragment" data-fragment-index="0">Consistent</p>
-                <p class="fragment" data-fragment-index="1">Isolated</p>
-                <p class="fragment" data-fragment-index="2">Durable</p>
+                <h1>Schema constrains queries</h1>
+                <pre><code data-trim class="language-sql">
+SELECT * FROM posts
+ORDER BY pageviews DESC
+                </code></pre>
+                <img src="images/no1.gif" class="fragment">
 
                 <aside class="notes">
                 <ul>
-                <li>Atomic
-                    <ul>
-                    <li>Batch statements applied atomically</li>
-                    <li>But no concept of a transaction spanning multiple queries</li>
-                    </ul>
-                </li>
-                <li>Consistent: No data integrity constraints
-                    <ul>
-                    <li>non-NULL columns</li>
-                    <li>unique indexes</li>
-                    <li>foreign keys</li>
-                    </ul>
-                    <ul>
-                    <li>INSERT at an existing primary key will just overwrite</li>
-                    <li>Cassandra 2.0 does have conditional inserts</li>
-                    </ul>
-                </li>
-                <li>Isolated: writes are isolated at the "Wide Row" level</li>
-                <li>Durable: Write is only successful once durably written</li>
+                <li>rows have an order defined by the schema</li>
+                <li>can't order by arbitrary columns or do inequality
+                constraints</li>
+                <li>Can't restrict by more than one column</li>
+                </ul>
                 </aside>
+                </section>
 
+                <section>
+                <h1>Data integrity constraints</h1>
+                <pre><code data-trim class="language-sql">
+ALTER TABLE posts MODIFY author_id NOT NULL;
 
-                <aside class="explanation">
-                <p>A series of statements sent as a batch will be applied
-                atomically, but there is no concept of multi-statement
-                transactions, ROLLBACK, etc.</p>
-                <p>Cassandra does not support data integrity constraints such as
-                NOT NULL columns, unique indices, foreign keys, etc. Even
-                primary keys uniqueness is enforced by simply overwriting data
-                at an already existing key. So, there is no concept of
-                consistency from the standpoint of ACID.</p>
-                <p>Writes in the context of a "transaction" are isolated at the
-                row level. We'll get a better sense of what the "row level"
-                means later in the presentation.</p>
-                <p>Data written to Cassandra is highly durable; write operations
-                will not report success until data is persisted durably to disk,
-                possibly with multiple copies.</p>
+CREATE UNIQUE INDEX login_idx ON users (login_idx)
+</code></pre>
+                <img src="images/no2.gif" class="fragment">
+                <aside class="notes">
+                <ul>
+                <li>NOT NULL columns</li>
+                <li>unique keys</li>
+                <li>foreign key constraints</li>
+                <li>primary key uniqueness enforced by overwriting, not
+                failing</li>
+                <li>Cassandra 2.0 lets you do a true insert, fails silently
+                (essentially INSERT IGNORE)</li>
+                </ul>
                 </aside>
+                </section>
+
+                <section>
+                <h1>CQL &lt; SQL</h1>
+
+                <pre><code data-time class="language-sql">
+SELECT * FROM posts
+INNER JOIN blogs ON posts.blog_id = blogs.id
+LIMIT 10 OFFSET 20
+</code></pre>
+                <img class="fragment" src="images/no3.gif">
+                <aside class="notes">
+                <ul>
+                <li>no JOIN</li>
+                <li>no OFFSET - pagination has to be in relation to last item</li>
+                <li>no subqueries</li>
+                </ul>
+                </aside>
+                </section>
+
+                <section>
+                <h1>Atomicity</h1>
+                <pre><code data-trim class="language-sql">BEGIN</code></pre>
+                <pre class="fragment"><code data-trim class="language-sql">DELETE FROM posts</code></pre>
+                <pre class="fragment"><code data-trim class="language-sql">ROLLBACK</code></pre>
+                <img class="fragment" src="images/no4.gif" />
                 </section>
                 </section>
 
@@ -365,6 +327,8 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
 
                 <aside class="notes">
                 <ul>
+                <li>first Cassandra schema at Brewster was a disaster</li>
+                <li>can't just pretend it's an SQL database</li>
                 <li>CQL is an abstraction</li>
                 <li>interface to the underlying representation via Thrift</li>
                 <li>no need to use it, but important to understand</li>
