@@ -14,7 +14,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="css/theme/solarized.css" id="theme">
 		<link rel="stylesheet" href="css/custom.css" id="theme">
 
 		<!-- For syntax highlighting -->
@@ -42,10 +42,10 @@
 				</section>
 
                 <section data-background="images/mat.jpg">
-                <h1>Mat Brown</h1>
-                <h3 style="font-family: Monaco; text-transform: none">@0utoftime</h3>
-                <h3 style="font-family: Monaco; text-transform: none">github.com/outoftime</h3>
-                <h3>Rap Genius</h3>
+                <h1 style="color: white">Mat Brown</h1>
+                <h3 style="font-family: Monaco; text-transform: none; color: white">@0utoftime</h3>
+                <h3 style="font-family: Monaco; text-transform: none; color: white">github.com/outoftime</h3>
+                <h3 style="color: white">Rap Genius</h3>
                 <aside class="notes">
                 <ul>
                 <li>used Cassandra/CQL2 at Brewster</li>
@@ -191,7 +191,8 @@ ORDER BY pageviews DESC
                 <pre><code data-trim class="language-sql">
 ALTER TABLE posts MODIFY author_id NOT NULL;
 
-CREATE UNIQUE INDEX login_idx ON users (login_idx)
+CREATE UNIQUE INDEX login_idx
+ON users (login_idx)
 </code></pre>
                 <img src="images/no2.gif" class="fragment">
                 <aside class="notes">
@@ -210,7 +211,7 @@ CREATE UNIQUE INDEX login_idx ON users (login_idx)
                 <section>
                 <h1>CQL &lt; SQL</h1>
 
-                <pre><code data-time class="language-sql">
+                <pre><code data-trim class="language-sql">
 SELECT * FROM posts
 INNER JOIN blogs ON posts.blog_id = blogs.id
 LIMIT 10 OFFSET 20
@@ -267,7 +268,7 @@ CREATE TABLE blogs (
                 <pre><code data-trim class="language-sql">
 CREATE TABLE posts (
     blog_subdomain varchar,
-    id timeuuid,
+    id uuid,
     title text,
     author_id uuid,
     PRIMARY KEY (blog_subdomain, id)
@@ -337,11 +338,18 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
 
                 </section>
                 <section>
-                <h1>Column families</h1>
-                <pre><code class="ruby">
+                <h1>Column Families</h1>
+                <pre><code class="ruby" data-trim>
 {
-  "big-data" =&gt; {1 =&gt; 'Cassandra', 2 =&gt; 'Riak', 4 =&gt; 'HBase'},
-  "relational" =&gt; {2 =&gt; 'SQLite', 7 =&gt; 'MySQL'}
+  "big-data" =&gt; {
+    1 =&gt; 'Cassandra',
+    2 =&gt; 'Riak',
+    4 =&gt; 'HBase'
+  },
+  "relational" =&gt; {
+    2 =&gt; 'SQLite',
+    7 =&gt; 'MySQL'
+  }
 }
                 </code></pre>
 
@@ -419,7 +427,7 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                         <td>HBase</td>
                     </tr>
                 </table>
-                <table style="position: relative; top: 5em; left: 5em">
+                <table style="position: relative; top: 4em; left: 5em">
                     <tr>
                         <th rowspan="2" style="background-color: dimgray"><code>relational</th>
                         <th style="background-color: darkslategray">2</td>
@@ -504,33 +512,33 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                     <tr>
                         <th>blog_subdomain</th>
                         <th>id</th>
-                        <th style="color: chartreuse">title</th>
-                        <th style="color: chartreuse">body</th>
+                        <th style="color: green">title</th>
+                        <th style="color: green">body</th>
                     </tr>
                     <tr>
                         <td style="color: red">mycat</td>
-                        <td style="color: cyan">2013-05-08</td>
+                        <td style="color: blue">2013-05-08</td>
                         <td style="color: orange">Jumping in a box</td>
                         <td style="color: orange">Taco loves jumping in boxes.</td>
                     </tr>
                     <tr>
                         <td style="color: red">mycat</td>
-                        <td style="color: cyan">2013-08-17</td>
+                        <td style="color: blue">2013-08-17</td>
                         <td style="color: orange">Hungry Cat</td>
                         <td style="color: orange">Taco is always hungry when I get home from
                             work.</td>
                     </tr>
                     <tr>
                         <td style="color: red">code</td>
-                        <td style="color: cyan">2013-07-08</td>
+                        <td style="color: blue">2013-07-08</td>
                         <td style="color: orange">Big Data Modeling</td>
                         <td style="color: orange">In a traditional relational database, all your data...</td>
                     </tr>
                 </table>
                 <p>
                     <div style="color: red">Partition key</div>
-                    <div style="color: cyan">Clustering column</div>
-                    <div style="color: chartreuse">Data column name</div>
+                    <div style="color: blue">Clustering column</div>
+                    <div style="color: green">Data column name</div>
                     <div style="color: orange">Data column value</div>
                 </p>
 
@@ -551,10 +559,10 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 <table>
                     <tr>
                         <th rowspan="2" style="color: red"><code>mycat</code></th>
-                        <td nowrap>(<span style="color: cyan">2013-05-08</span>, <span style="color: chartreuse">"title"</span>)</td>
-                        <td nowrap>(<span style="color: cyan">2013-05-08</span>, <span style="color: chartreuse">"body"</span>)</td>
-                        <td nowrap>(<span style="color: cyan">2013-08-17</span>, <span style="color: chartreuse">"title"</span>)</td>
-                        <td nowrap>(<span style="color: cyan">2013-08-17</span>, <span style="color: chartreuse">"body"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-05-08</span>, <span style="color: green">"title"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-05-08</span>, <span style="color: green">"body"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-08-17</span>, <span style="color: green">"title"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-08-17</span>, <span style="color: green">"body"</span>)</td>
                     </tr>
                     <tr>
                         <td style="color: orange">Jumping in a box</td>
@@ -564,8 +572,8 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                     </tr>
                     <tr style="border-top: 10px solid gray">
                         <th rowspan="2" style="color: red"><code>code</code></th>
-                        <td nowrap>(<span style="color: cyan">2013-07-08</span>, <span style="color: chartreuse">"title"</span>)</td>
-                        <td nowrap>(<span style="color: cyan">2013-07-08</span>, <span style="color: chartreuse">"body"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-07-08</span>, <span style="color: green">"title"</span>)</td>
+                        <td nowrap>(<span style="color: blue">2013-07-08</span>, <span style="color: green">"body"</span>)</td>
                     </tr>
                     <tr>
                         <td style="color: orange">Big Data Modeling</td>
@@ -574,8 +582,8 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 </table>
                 <p>
                     <div style="color: red">Partition key</div>
-                    <div style="color: cyan">Clustering column</div>
-                    <div style="color: chartreuse">Data column name</div>
+                    <div style="color: blue">Clustering column</div>
+                    <div style="color: green">Data column name</div>
                     <div style="color: orange">Data column value</div>
                 </p>
 
@@ -649,8 +657,10 @@ LIMIT 10
                 <h1>Write without reading</h1>
                 <pre><code data-trim class="language-sql">
 UPDATE posts
-SET title = 'Hungry Cat', categories = categories + {'Dinner Time'}
-WHERE blog_subdomain = 'mycat' AND id = 2013-07-08
+SET title = 'Hungry Cat',
+    categories = categories + {'Dinner Time'}
+WHERE blog_subdomain = 'mycat'
+  AND id = 2013-07-08
                 </code></pre>
 
                 <aside class="notes">
