@@ -678,23 +678,23 @@ WHERE blog_subdomain = 'mycat'
                 <section>
                 <h1>Simple primary keys</h1>
                 <div style="position:relative">
-                <pre><code class="language-sql">
+                <pre><code class="language-sql" data-trim>
 SELECT * FROM blogs
 ORDER BY subdomain ASC
                 </code></pre>
-                <div class="fragment">
-                <h2 style="font-size: 3em; position: absolute; top: 0.1em; left: 0; padding-left: 1em; color: red; width: 100%; height: 100%; text-align: left; opacity: 0.7">NOPE</h2>
+                <img src="images/no5.gif" class="fragment">
                 </div>
-                </div>
+                </section>
+
+                <section>
+                <h1>Simple primary keys</h1>
 
                 <div style="position: relative">
                 <pre class="fragment"><code class="language-sql">
 SELECT * FROM blogs
 WHERE subdomain &gt; "mycat"
                 </code></pre>
-                <div class="fragment">
-                <h2 style="font-size: 3em; position: absolute; top: 0.1em; left: 0; padding-left: 1em; color: red; width: 100%; height: 100%; text-align: left; opacity: 0.7">NOPE</h2>
-                </div>
+                <img src="images/no6.gif" class="fragment">
                 </div>
 
                 <aside class="notes">
@@ -707,7 +707,9 @@ WHERE subdomain &gt; "mycat"
                 </ul>
                 </aside>
                 </section>
+                </section>
 
+                <section>
                 <section>
                 <h1>Let's make this easy</h1>
                 <p>http://github.com/cequel/cequel</p>
@@ -723,8 +725,45 @@ WHERE subdomain &gt; "mycat"
                 </section>
 
                 <section>
-                <h1>That's all, folks</h1>
-                <img src="images/taco.jpg">
+                <h1>Define Models</h1>
+                <pre><code class="language-ruby" data-trim>
+class Blog &lt; Cequel::Base
+  key :permalink, :text
+  column :name, :text
+  has_many :posts
+end
+
+class Post &lt; Cequel::Base
+  belongs_to :blog
+  key :id, :timeuuid
+  column :title, :text
+  set :categories, :text
+end
+                </code></pre>
+                </section>
+
+                <section>
+                <h1>Use them</h1>
+                <pre><code class="language-ruby" data-trim>
+Blog['big-data'].posts.each do |post|
+  post.update_attributes!(
+    :title =&gt; post.title.upcase)
+end
+                </code></pre>
+                </section>
+                </section>
+
+                <section data-background="images/taco.jpg">
+                <h1 style="color: white">That's all, folks</h1>
+                <h3 style="color: white; font-family: Monaco; text-transform: none">
+                    @0utoftime
+                </h3>
+                <h3 style="color: white; font-family: Monaco; text-transform: none">
+                    github.com/cequel/cequel
+                </h3>
+                <h3 style="color: white; font-family: Monaco; text-transform: none">
+                    mat@rapgenius.com
+                </h3>
                 </section>
 
 			</div>
