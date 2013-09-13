@@ -55,10 +55,10 @@
                 </section>
 
                 <section>
+                <section>
                 <h1>Why Cassandra?</h1>
                 </section>
 
-                <section>
                 <section>
                 <h2>Distributed and Masterless</h2>
                 <img src="images/cluster.png">
@@ -141,9 +141,10 @@
                 <section>
                 <h1>CQL</h1>
                 <pre><code data-trim class="language-sql">
-SELECT title, body
-FROM documents
-WHERE id = 1
+SELECT id, title, body
+FROM posts
+WHERE blog_id = 1
+LIMIT 10
                 </code></pre>
 
                 <aside class="notes">
@@ -227,12 +228,15 @@ LIMIT 10 OFFSET 20
                 </section>
 
                 <section>
-                <h1>Atomicity</h1>
+                <h1>Transactions</h1>
                 <pre><code data-trim class="language-sql">BEGIN</code></pre>
                 <pre class="fragment"><code data-trim class="language-sql">DELETE FROM posts</code></pre>
                 <pre class="fragment"><code data-trim class="language-sql">ROLLBACK</code></pre>
                 <img class="fragment" src="images/no4.gif" />
                 </section>
+
+                <section data-background="images/cluster.png"></section>
+                <section data-background="images/firehose.jpg"></section>
                 </section>
 
                 <section>
@@ -372,20 +376,20 @@ ALTER TABLE posts ADD categories set&lt;text&gt;
                 <h1>Column Families</h1>
                 <table>
                     <tr>
-                        <th rowspan="2" style="background-color: dimgray"><code>big-data</code></th>
-                        <th style="background-color: darkslategray">1</td>
-                        <th style="background-color: darkslategray">2</td>
-                        <th style="background-color: darkslategray">4</td>
+                        <th rowspan="2" style="background-color: dimgray; color: white"><code>big-data</code></th>
+                        <th style="background-color: darkslategray; color: white">1</td>
+                        <th style="background-color: darkslategray; color: white">2</td>
+                        <th style="background-color: darkslategray; color: white">4</td>
                     </tr>
                     <tr>
                         <td>Cassandra</td>
                         <td>Riak</td>
                         <td style="border-bottom: 10px solid gray">HBase</td>
                     </tr>
-                    <tr style="border-top: 10px solid gray">
-                        <th rowspan="2" style="background-color: dimgray"><code>relational</th>
-                        <th style="background-color: darkslategray">2</td>
-                        <th style="background-color: darkslategray">7</td>
+                    <tr style="border-top: 10px solid gray; color: white">
+                        <th rowspan="2" style="background-color: dimgray; color: white"><code>relational</th>
+                        <th style="background-color: darkslategray; color: white">2</td>
+                        <th style="background-color: darkslategray; color: white">7</td>
                     </tr>
                     <tr>
                         <td>SQLite</td>
@@ -674,7 +678,9 @@ WHERE blog_subdomain = 'mycat'
                 </ul>
                 </aside>
                 </section>
+                </section>
 
+                <section>
                 <section>
                 <h1>Simple primary keys</h1>
                 <div style="position:relative">
@@ -690,7 +696,7 @@ ORDER BY subdomain ASC
                 <h1>Simple primary keys</h1>
 
                 <div style="position: relative">
-                <pre class="fragment"><code class="language-sql">
+                <pre><code class="language-sql" data-trim>
 SELECT * FROM blogs
 WHERE subdomain &gt; "mycat"
                 </code></pre>
