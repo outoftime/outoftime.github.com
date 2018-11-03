@@ -1,13 +1,435 @@
----
-title: out of time
-layout: main
----
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mat Brown</title>
 
-{% for post in site.posts %}
-  <div class="post">
-    <h5 class="date">{{ post.date | date: "%d %B %Y" }}</h5>
-    <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
-    {{ post.content }}
-		<a href="{{ post.url }}#disqus_thread">View Comments</a>
-  </div>
-{% endfor %}
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    >
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css"
+      rel="stylesheet"
+    >
+
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400,600,700"
+      rel="stylesheet"
+    >
+
+    <style>
+      body { font-family: 'Open Sans', sans-serif; }
+
+      p,
+      li {
+        line-height: 1.4em;
+      }
+
+      h1, h6 {
+        margin-top: 1rem;
+      }
+
+      h2 {
+        text-decoration: underline;
+        text-decoration-style: double;
+        margin: 1em 0;
+      }
+
+      h3 {
+        font-size: 1rem;
+      }
+
+      h6 {
+        font-size: 1rem;
+        font-weight: normal;
+        float: right;
+      }
+
+      section {
+        border-bottom: 2px solid black;
+        position: relative;
+      }
+
+      .section__dates {
+        float: right;
+        font-size: 0.9rem;
+      }
+
+      .section__item--minor {
+        margin-bottom: 0.5em;
+      }
+
+      .section__header {
+        margin: 0.5em 0;
+      }
+
+      .section__header-link {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .section__header--minor {
+        display: inline;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .section__subhead {
+        margin: 0 0 1rem;
+        font-weight: normal;
+      }
+
+      .skill { font-weight: 600; }
+
+      footer {
+        display: flex;
+        font-size: 0.8rem;
+      }
+
+      .contact {
+        flex: 1;
+        margin: 1em 0;
+        text-align: center;
+      }
+
+      @media screen {
+        html {
+          color: #333;
+          font-size: 18px;
+          padding: 0 1.5rem;
+        }
+
+        header, main, footer {
+          max-width: 35rem;
+          margin: 0 auto;
+        }
+
+        .section__video-container {
+          margin: 1rem auto;
+          overflow: hidden;
+          padding-top: 56.25%;
+          position: relative;
+        }
+
+        .section__video-player {
+          border: none;
+          height: 33vh;
+          left: 0;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          width: 100%
+        }
+
+        .section__print-description {
+          display: none;
+        }
+      }
+
+      @media print {
+        body { font-size: 11pt; }
+        header, main, footer {
+          margin-left: 0.5in;
+          margin-right: 0.5in;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+        .section__video-player {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <hgroup>
+      <h6>I write software</h6>
+      <h1>Mat Brown</h1>
+      </hgroup>
+    </header>
+
+    <main>
+    <section id="skills">
+      <h2>Skills</h2>
+      <p>
+        Right now I’m working with <span class="skill">React</span>,
+        <span class="skill">Redux</span>,
+        <span class="skill">Rails</span>,
+        <span class="skill">PostgreSQL</span>,
+        <span class="skill">Redis</span>, <span class="skill">AngularJS</span>,
+        and <span class="skill">Algolia</span>.
+      </p>
+
+      <p>
+        In the past, I’ve also worked with
+        <span class="skill">ElasticSearch</span>,
+        <span class="skill">Cassandra</span>,
+        <span class="skill">Riak</span>,
+        <span class="skill">jQuery</span>,
+        <span class="skill">MySQL</span>,
+        <span class="skill">Solr</span>,
+        and <span class="skill">Java</span>.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Experience</h2>
+      <div class="section__item">
+        <div class="section__dates">May 2013–Present</div>
+        <h3 class="section__header">
+          <a
+            class="section__header-link"
+            href="https://genius.com"
+          >Genius</a>
+        </h3>
+        <h4 class="section__subhead">
+          Engineering Lead, Engineering Manager
+        </h4>
+        <ul class="section__details">
+          <li>
+            As project lead for high-profile
+            <a
+              href="https://www.billboard.com/articles/business/8280620/genius-youtube-partner-song-stories-feature"
+            >integration with Apple Music</a>, managed development
+            timeline, did week-to-week project planning, and
+            closely supported team of six developers at all stages
+            of implementation, from technical architecture design
+            to code review. Delivered project on time with build
+            window of two months
+          </li>
+          <li>
+            Played the same role for
+            <a
+              href="https://www.fastcompany.com/90249410/genius-and-apple-music-teaming-up-to-make-karaoke-that-much-easier"
+            >Song Stories pilot with YouTube</a>, with on time delivery after three-month build
+          </li>
+          <li>
+            Planned and executed strategic and technical overhaul of
+            programmatic revenue stream, resulting in actual 2017
+            revenue double initial projections
+          </li>
+          <li>
+            Managed full-stack engineering team of seven engineers,
+            fostering a culture of technical curiosity and rigor
+          </li>
+          <li>
+            Designed and built major technical components of the
+            <a href="https://techcrunch.com/2015/04/08/annotate-this/">
+            Genius Web Annotator</a>, including the algorithm that
+            maintains stable annotation highlights on external
+            webpages with changing content and structure, and the
+            <code>genius.it</code> proxy that enables annotation of
+            any webpage with no special software needed
+          </li>
+          <li>
+            Upgraded server-side application runtime from Ruby 1.8
+            to Ruby 2, patching legacy Rails version for
+            compatibility
+          </li>
+          <li>
+            Introduced edge caching to our site’s infrastructure,
+            allowing us to handle sudden traffic spikes of double
+            our usual throughput without affecting site performance
+          </li>
+        </ul>
+      </div>
+
+      <div class="section__item">
+        <div class="section__dates">July 2015–Present</div>
+        <h3 class="section__header">
+          <a
+            class="section__header-link"
+            href="https://popcode.org"
+          >Popcode</a>
+        </h3>
+        <h4 class="section__subhead">Creator, Maintainer</h4>
+        <ul class="section__details">
+          <li>
+            Built web-based code editor for ScriptEd students to use in
+            classroom
+          </li>
+          <li>
+            Similar to JS Bin or CodePen, but focused on educational use case
+          </li>
+          <li>
+            Gives students immediate and legible feedback on errors in code;
+            supports classroom workflows
+          </li>
+          <li>
+            Adopted as the official editing environment for ScriptEd Foundations
+            starting in 2016–2017 school year
+          </li>
+          <li>
+            Continue to maintain and improve with team of 35 open
+            source contributors
+          </li>
+        </ul>
+      </div>
+
+      <div class="section__item">
+        <div class="section__dates">September 2014–April 2018</div>
+        <h3 class="section__header">
+          <a
+            class="section__header-link"
+            href="https://codenation.org/"
+          >Code Nation (formerly ScriptEd)</a>
+        </h3>
+        <h4 class="section__subhead">Volunteer classroom instructor</h4>
+        <ul class="section__details">
+          <li>
+            Taught HTML, CSS, and JavaScript in a high school classroom of 25
+            students twice a week in a team of four volunteers
+          </li>
+          <li>
+            As lead teacher every fourth week, planned and delivered lessons
+          </li>
+          <li>
+            Served on ScriptEd’s curriculum design committee, now member of Code
+            Nation curriculum council by invitation
+          </li>
+        </ul>
+      </div>
+
+      <div class="section__item">
+        <div class="section__dates">February 2015</div>
+        <h3 class="section__header">
+          <a
+            class="section__header-link"
+            href="https://www.packtpub.com/big-data-and-business-intelligence/learning-apache-cassandra"
+          >Learning Apache Cassandra</a>
+        </h3>
+        <h4 class="section__subhead">Author</h4>
+      </div>
+
+      <div class="section__item">
+        <div class="section__dates">April 2012–September 2015</div>
+        <h3 class="section__header">
+          <a
+            class="section__header-link"
+            href="https://github.com/cequel/cequel"
+          >Cequel</a>
+        </h3>
+        <h4 class="section__subhead">Creator, Maintainer</h4>
+        <ul class="section__details">
+          <li>Ruby ORM backed by Cassandra</li>
+          <li>
+            Initially built it at Brewster, continued to maintain it after
+            leaving, releasing a major new version targeting CQL3
+          </li>
+          <li>
+            Built support for advanced CQL3 features like atomic collection
+            mutation through intuitive Ruby interface
+          </li>
+          <li>
+            Handed off maintenance to another contributor, still maintained
+          </li>
+        </ul>
+      </div>
+
+      <div class="section__item">
+        <div class="section__dates">July 2011–May 2013</div>
+        <h3 class="section__header">Brewster</h3>
+        <h4 class="section__subhead">Software Engineer</h4>
+        <ul class="section__details">
+          <li>
+            Transitioned data storage from PostgreSQL and MongoDB to Cassandra
+            and Riak, enabling us to scale our dataset beyond the capacity of a
+            single-instance database
+          </li>
+          <li>
+            Designed system for coordinating interdependent, asynchronous jobs
+            that together comprise a task whose exact composition is not known
+            at the outset
+          </li>
+          <li>
+            Used Riak map-reduce to speed up core identity merge calculation,
+            reducing account creation time by an order of magnitude
+          </li>
+        </ul>
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Clique</h3>,
+        Technical Co-Founder,
+        January 2011–June 2011
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Sunspot</h3>,
+        Creator, Maintainer,
+        October 2008–August 2011
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Patch</h3>,
+        Principal Software Engineer,
+        April 2008–December 2010
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Time Out New York</h3>,
+        Online Developer,
+        February 2007–March 2008
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">YB Services</h3>,
+        Director of Web Development,
+        September 2006–February 2007
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Starbucks</h3>,
+        Enterprise Help Desk Analyst I,
+        September 2005–August 2006
+      </div>
+    </section>
+
+    <section id="talks">
+      <h2>Talks</h3>
+
+      <p class="section__print-description">
+        A playlist with a few tech talks I’ve given can be found at
+        <code>goo.gl/6se1rm</code>
+      </p>
+
+      <div class="section__video-container">
+        <iframe
+          class="section__video-player"
+          src="https://www.youtube.com/embed/videoseries?list=PLlVEjTjl1RMMsZ_x_9GtbhNwq4-ezd9xd"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+    </section>
+
+    <section class="section">
+      <h2>Education</h2>
+      <div class="section__item">
+        <h3 class="section__header">Dartmouth College</h3>
+        <h4 class="section__subhead">
+          B.A. Cum Laude, Computer Science modified with Linguistics
+        </h4>
+      </div>
+    </section>
+    </main>
+
+    <footer>
+      <script type="text/javascript">
+      <!--
+      var s="=tqbo!dmbtt>#dpoubdu#?nbu/b/cspxoAhnbjm/dpn=0tqbo?=tqbo!dmbtt>#dpoubdu#?)313*!41:.3145=0tqbo?";
+      m=""; for (i=0; i<s.length; i++) m+=String.fromCharCode(s.charCodeAt(i)-1); document.write(m);
+      //-->
+      </script>
+      <noscript>
+      &#60&#115&#112&#97&#110&#32&#99&#108&#97&#115&#115&#61&#34&#99&#111&#110&#116&#97&#99&#116&#34&#62&#109&#97&#116&#46&#97&#46&#98&#114&#111&#119&#110&#64&#103&#109&#97&#105&#108&#46&#99&#111&#109&#60&#47&#115&#112&#97&#110&#62&#13&#10&#60&#115&#112&#97&#110&#32&#99&#108&#97&#115&#115&#61&#34&#99&#111&#110&#116&#97&#99&#116&#34&#62&#40&#50&#48&#50&#41&#32&#51&#48&#57&#45&#50&#48&#51&#52&#60&#47&#115&#112&#97&#110&#62
+      </noscript>
+
+    </footer>
+  </body>
+</html>
