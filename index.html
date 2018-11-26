@@ -15,7 +15,7 @@
     >
 
 
-    <link
+  <link
       href="https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400,600,700"
       rel="stylesheet"
     >
@@ -55,6 +55,10 @@
       section {
         border-bottom: 2px solid black;
         position: relative;
+      }
+
+      a {
+        color: inherit;
       }
 
       .section__dates {
@@ -140,11 +144,13 @@
           margin-right: 0.5in;
         }
         a {
-          color: inherit;
           text-decoration: none;
         }
         .section__video-player {
           display: none;
+        }
+        .section_experience {
+          page-break-before: always;
         }
       }
     </style>
@@ -152,38 +158,45 @@
 
   <body>
     <header>
-      <hgroup>
-      <h6>I write software</h6>
       <h1>Mat Brown</h1>
-      </hgroup>
     </header>
 
     <main>
-    <section id="skills">
-      <h2>Skills</h2>
-      <p>
-        Right now I’m working with <span class="skill">React</span>,
-        <span class="skill">Redux</span>,
-        <span class="skill">Rails</span>,
-        <span class="skill">PostgreSQL</span>,
-        <span class="skill">Redis</span>, <span class="skill">AngularJS</span>,
-        and <span class="skill">Algolia</span>.
-      </p>
+      <section id="executive-summary">
+        <p>
+          I’m a full-stack software engineer with twelve years’ experience
+          working on consumer-facing applications, primarily on the web. I’ve
+          built software to scale in traffic, data size, and product
+          complexity. I’m most effective as a technical lead, splitting my time
+          between writing code to tackle challenging technical problems, and
+          supporting my colleagues in doing the same.
+        </p>
 
-      <p>
-        In the past, I’ve also worked with
-        <span class="skill">ElasticSearch</span>,
-        <span class="skill">Cassandra</span>,
-        <span class="skill">Riak</span>,
-        <span class="skill">jQuery</span>,
-        <span class="skill">MySQL</span>,
-        <span class="skill">Solr</span>,
-        and <span class="skill">Java</span>.
-      </p>
-    </section>
+        <p>
+          Right now I’m working with <span class="skill">React</span>,
+          <span class="skill">Redux</span>,
+          <span class="skill">Rails</span>,
+          <span class="skill">PostgreSQL</span>,
+          <span class="skill">Redis</span>,
+          <span class="skill">AngularJS</span>,
+          <span class="skill">Docker</span>,
+          and <span class="skill">Algolia</span>.
+          In the past, I’ve also worked with
+          <span class="skill">ElasticSearch</span>,
+          <span class="skill">Cassandra</span>,
+          <span class="skill">Riak</span>,
+          <span class="skill">Erlang</span>,
+          <span class="skill">MongoDB</span>,
+          <span class="skill">jQuery</span>,
+          <span class="skill">MySQL</span>,
+          <span class="skill">Solr</span>,
+          <span class="skill">Java</span>, and
+          <span class="skill">PHP</span>.
+        </p>
+      </section>
 
     <section class="section">
-      <h2>Experience</h2>
+      <h2>Recent Highlights</h2>
       <div class="section__item">
         <div class="section__dates">May 2013–Present</div>
         <h3 class="section__header">
@@ -197,49 +210,19 @@
         </h4>
         <ul class="section__details">
           <li>
-            As project lead for high-profile
-            <a
-              href="https://www.fastcompany.com/90249410/genius-and-apple-music-teaming-up-to-make-karaoke-that-much-easier"
-            >integration with Apple Music</a>, managed development
-            timeline, did week-to-week project planning, and
-            closely supported team of six developers at all stages
-            of implementation, from technical architecture design
-            to code review. Delivered project on time with build
-            window of two months
-          </li>
-          <li>
-            Played the same role for
-            <a
-              href="https://www.billboard.com/articles/business/8280620/genius-youtube-partner-song-stories-feature"
-            >Song Stories pilot with YouTube</a>, with on time delivery after three-month build
-          </li>
-          <li>
-            Planned and executed strategic and technical overhaul of
-            programmatic revenue stream, resulting in actual 2017
-            revenue double initial projections
-          </li>
-          <li>
-            Managed full-stack engineering team of seven engineers,
-            fostering a culture of technical curiosity and rigor
-          </li>
-          <li>
-            Designed and built major technical components of the
+            Designed and implemented the
+            <a href="https://www.youtube.com/watch?v=nclWgktO4hY&feature=youtu.be&t=8">annotation
+            highlight anchoring algorithm</a> for the
             <a href="https://techcrunch.com/2015/04/08/annotate-this/">
-            Genius Web Annotator</a>, including the algorithm that
-            maintains stable annotation highlights on external
-            webpages with changing content and structure, and the
-            <code>genius.it</code> proxy that enables annotation of
-            any webpage with no special software needed
+            Genius Web Annotator</a>, clearing the major technical hurdle for
+            Genius’s core vision of annotation across the web.
           </li>
           <li>
-            Upgraded server-side application runtime from Ruby 1.8
-            to Ruby 2, patching legacy Rails version for
-            compatibility
-          </li>
-          <li>
-            Introduced edge caching to our site’s infrastructure,
-            allowing us to handle sudden song release traffic spikes of double
-            our usual throughput without affecting site performance
+            Took over full responsibility for Genius’s programmatic revenue
+            stream for the year 2017, overhauling demand integrations and
+            creating a system for detailed analysis of programmatic
+            performance, resulting in total programmatic revenue for that
+            year double our initial projections.
           </li>
         </ul>
       </div>
@@ -255,83 +238,15 @@
         <h4 class="section__subhead">Creator, Maintainer</h4>
         <ul class="section__details">
           <li>
-            Built web-based code editor for ScriptEd students to use in
-            classroom
+            Identified need for student-focused code editing environment while
+            volunteering for Code Nation; built CodePen-like environment from
+            the ground up in React and Redux.
           </li>
           <li>
-            Similar to JS Bin or CodePen, but focused on educational use case
-          </li>
-          <li>
-            Gives students immediate and legible feedback on errors in code;
-            supports classroom workflows
-          </li>
-          <li>
-            Adopted as the official editing environment for ScriptEd Foundations
-            starting in 2016–2017 school year
-          </li>
-          <li>
-            Continue to maintain and improve with team of 35 open
-            source contributors
-          </li>
-        </ul>
-      </div>
-
-      <div class="section__item">
-        <div class="section__dates">September 2014–April 2018</div>
-        <h3 class="section__header">
-          <a
-            class="section__header-link"
-            href="https://codenation.org/"
-          >Code Nation (formerly ScriptEd)</a>
-        </h3>
-        <h4 class="section__subhead">Volunteer classroom instructor</h4>
-        <ul class="section__details">
-          <li>
-            Taught HTML, CSS, and JavaScript in a high school classroom of 25
-            students twice a week in a team of four volunteers
-          </li>
-          <li>
-            As lead teacher every fourth week, planned and delivered lessons
-          </li>
-          <li>
-            Served on ScriptEd’s curriculum design committee, now member of Code
-            Nation curriculum council by invitation
-          </li>
-        </ul>
-      </div>
-
-      <div class="section__item">
-        <div class="section__dates">February 2015</div>
-        <h3 class="section__header">
-          <a
-            class="section__header-link"
-            href="https://www.packtpub.com/big-data-and-business-intelligence/learning-apache-cassandra"
-          >Learning Apache Cassandra</a>
-        </h3>
-        <h4 class="section__subhead">Author</h4>
-      </div>
-
-      <div class="section__item">
-        <div class="section__dates">April 2012–September 2015</div>
-        <h3 class="section__header">
-          <a
-            class="section__header-link"
-            href="https://github.com/cequel/cequel"
-          >Cequel</a>
-        </h3>
-        <h4 class="section__subhead">Creator, Maintainer</h4>
-        <ul class="section__details">
-          <li>Ruby ORM backed by Cassandra</li>
-          <li>
-            Initially built it at Brewster, continued to maintain it after
-            leaving, releasing a major new version targeting CQL3
-          </li>
-          <li>
-            Built support for advanced CQL3 features like atomic collection
-            mutation through intuitive Ruby interface
-          </li>
-          <li>
-            Handed off maintenance to another contributor, still maintained
+            Popcode is now the official editing environment for Code Nation’s
+            first-year curriculum, used by over a thousand students every day
+            of class. It’s also an open-source project with over 30
+            contributors and active development ongoing.
           </li>
         </ul>
       </div>
@@ -342,32 +257,37 @@
         <h4 class="section__subhead">Software Engineer</h4>
         <ul class="section__details">
           <li>
-            Transitioned data storage from PostgreSQL and MongoDB to Cassandra
-            and Riak, enabling us to scale our dataset beyond the capacity of a
-            single-instance database
+            After original PostgreSQL/MongoDB data storage solution proved
+            unable to accommodate our data sets, migrated to Cassandra
+            and Riak, clearing major scaling hurdle for launch of the product.
           </li>
           <li>
-            Designed system for coordinating interdependent, asynchronous jobs
-            that together comprise a task whose exact composition is not known
-            at the outset
-          </li>
-          <li>
-            Used Riak map-reduce to speed up core identity merge calculation,
-            reducing account creation time by an order of magnitude
+            Re-implemented core identity merge calculation as a Riak MapReduce,
+            reducing account creation time by an order of magnitude.
           </li>
         </ul>
+      </div>
+    </section>
+
+    <section class="section section_experience">
+      <h2>Work Experience</h2>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Genius</h3>,
+        Engineering Lead, Engineering Manager,
+        May 2013–Present
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Brewster</h3>,
+        Software Engineer,
+        July 2011–May 2013
       </div>
 
       <div class="section__item--minor">
         <h3 class="section__header--minor">Clique</h3>,
         Technical Co-Founder,
         January 2011–June 2011
-      </div>
-
-      <div class="section__item--minor">
-        <h3 class="section__header--minor">Sunspot</h3>,
-        Creator, Maintainer,
-        October 2008–August 2011
       </div>
 
       <div class="section__item--minor">
@@ -395,30 +315,53 @@
       </div>
     </section>
 
-    <section id="talks">
-      <h2>Talks</h3>
+    <section class="section">
+      <h2>Open Source</h2>
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">
+          <a href="https://github.com/popcodeorg/popcode">Popcode</a></h3>,
+        HTML/CSS/JavaScript editor for students,
+        July 2015–present
+      </div>
 
-      <p class="section__print-description">
-        A playlist with a few tech talks I’ve given can be found at
-        <code>goo.gl/6se1rm</code>
-      </p>
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">
+          <a href="https://github.com/cequel/cequel">Cequel</a></h3>,
+        Ruby ORM backed by Cassandra,
+        April 2012–September 2015
+      </div>
 
-      <div class="section__video-container">
-        <iframe
-          class="section__video-player"
-          src="https://www.youtube.com/embed/videoseries?list=PLlVEjTjl1RMMsZ_x_9GtbhNwq4-ezd9xd"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">
+          <a href="https://github.com/sunspot/sunspot">Sunspot</a></h3>,
+        Solr search library for Ruby,
+        October 2008–August 2011
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Extracurricular</h2>
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">
+          <a href="https://codenation.org">Code Nation</a></h3>,
+        volunteer classroom instructor,
+        September 2014–April 2018
+      </div>
+
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">
+          <a href="https://www.packtpub.com/big-data-and-business-intelligence/learning-apache-cassandra">Learning Apache Cassandra</a></h3>,
+        published February 2015
+      </div>
     </section>
 
     <section class="section">
       <h2>Education</h2>
-      <div class="section__item">
-        <h3 class="section__header">Dartmouth College</h3>
-        <h4 class="section__subhead">
-          B.A. Cum Laude, Computer Science modified with Linguistics
-        </h4>
+      <div class="section__item--minor">
+        <h3 class="section__header--minor">Dartmouth College</h3>,
+          B.A. Cum Laude,
+          Computer Science modified with Linguistics,
+          2005
       </div>
     </section>
     </main>
