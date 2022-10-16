@@ -48,7 +48,7 @@ This map may look a bit surprising! I’ll discuss some of the more unintuitive 
 
 In order to assign states to time zones, I start by proposing an answer to another question: what is the ideal time zone in any given _place_? To answer this question, we don’t have to worry about the size or shape of a state. We just want to have an opinion about what the best time zone is for exactly where you happen to be standing.
 
-Before explaining my answer to that question, I’ll need to introduce one more bit of terminology: **solar noon**. Solar noon is, quite simply, when the clock is highest in the sky. You might think that this happens at 12:00pm, but in most places, that’s not the case. Depending on where you are within your time zone, solar noon can be earlier or later than noon. During daylight saving time, it’s pretty much always going to be later than noon, and it’s not unusual to have it happen after 1:00pm.
+Before explaining my answer to that question, I’ll need to introduce one more bit of terminology: **solar noon**. Solar noon is, quite simply, when the sun is highest in the sky. You might think that this happens at 12:00pm, but in most places, that’s not the case. Depending on where you are within your time zone, solar noon can be earlier or later than noon. During daylight saving time, it’s pretty much always going to be later than noon, and it’s not unusual to have it happen after 1:00pm.
 
 The fact that we’re strongly considering permanent Daylight Saving Time in the United States reveals something about our society: **we prefer later sunsets**. I wanted to design a time zone map that respects that preference, while also ensuring that we don’t shift things _too_ late, like the example of Seattle in the winter under Pacific Daylight Time.
 
