@@ -1,0 +1,73 @@
+body {
+  font-size: 18px;
+  font-family: "Merriweather", serif;
+}
+
+article {
+  width: 60ch;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+img {
+  max-width: 100%;
+}
+
+article p,
+article li {
+  line-height: 1.8;
+}
+
+article li {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+table {
+  border: 1px solid lightgray;
+  border-collapse: collapse;
+  margin: 1em auto;
+}
+
+td,
+th {
+  padding: 1ch;
+  border: 1px solid lightgray;
+  vertical-align: text-top;
+}
+
+.time-zones tr td:nth-child(1)::before {
+  content: "";
+  vertical-align: middle;
+  margin-right: 1ch;
+  display: inline-block;
+  height: 1ch;
+  width: 1ch;
+}
+
+.time-zones tr:nth-child(1) td:nth-child(1)::before {
+  background-color: #f5ee7f;
+}
+.time-zones tr:nth-child(2) td:nth-child(1)::before {
+  background-color: #f5750a;
+}
+
+.time-zones tr:nth-child(3) td:nth-child(1)::before {
+  background-color: #de028a;
+}
+
+.time-zones tr:nth-child(4) td:nth-child(1)::before {
+  background-color: #0f0af5;
+}
+
+.time-zones tr:nth-child(5) td:nth-child(1)::before {
+  background-color: #09ebcd;
+}
+
+.time-zones tr:nth-child(6) td:nth-child(1)::before {
+  background-color: #8f8d00;
+}
+
+.time-zones tr:nth-child(7) td:nth-child(1)::before {
+  background-color: #e00101;
+}
