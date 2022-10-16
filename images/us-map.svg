@@ -9,25 +9,25 @@
 .separator1 {stroke:#B0B0B0; stroke-width:2} /* color and width of lines around Alaska and Hawaii */
 
 /* GMT-4 */
-.ct,.me,.ma,.nh,.nj,.ny,.ri,.vt { fill: #ff0000; }
+.ct,.me,.ma,.nh,.nj,.ny,.ri,.vt { fill: #F5EE7F; }
 
 /* GMT-5 */
-.al,.de,.dc,.fl,.ga,.il,.in,.ky,.md,.mi,.ms,.nc,.oh,.pa,.sc,.tn,.va,.wv,.wi { fill: #ffff00; }
+.al,.de,.dc,.fl,.ga,.il,.in,.ky,.md,.mi,.ms,.nc,.oh,.pa,.sc,.tn,.va,.wv,.wi { fill: #F5750A; }
 
 /* GMT-6 */
-.ar,.ia,.ks,.la,.mn,.mo,.ne,.nd,.ok,.sd,.tx{ fill: #00ff00; }
+.ar,.ia,.ks,.la,.mn,.mo,.ne,.nd,.ok,.sd,.tx{ fill: #DE028A; }
 
 /* GMT-7 */
-.az,.ca,.co,.id,.mt,.nv,.nm,.ut,.wy { fill: #00ffff; }
+.az,.ca,.co,.id,.mt,.nv,.nm,.ut,.wy { fill: #0F0AF5; }
 
 /* GMT-8 */
-.or,.wa { fill: #0000ff; }
+.or,.wa { fill: #09EBCD; }
 
 /* GMT-9 */
-.ak { fill: #ff00ff; }
+.ak { fill: #8F8D00; }
 
 /* GMT-10 */
-.hi { fill: #888800; }
+.hi { fill: #E00101; }
 </style>
 </defs>
 

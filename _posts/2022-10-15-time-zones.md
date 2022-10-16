@@ -30,13 +30,17 @@ I propose that we have five time zones in the lower 48 states, rather than the f
 
 The five zones are:
 
-Time zone | GMT offset | Formerly known as
----|---|---
-New England Standard Time | -4 | Eastern Daylight Time
-East–Central Standard Time | -5 | Eastern Standard Time<br>Central Daylight Time
-Plains Standard Time | -6 | Central Standard Time<br>Mountain Daylight Time
-Western Standard Time | -7 | Mountain Standard Time<br>Pacific Daylight Time
-Cascadia Standard Time | -8 | Pacific Standard Time
+{: .time-zones}
+
+| Time zone                  | GMT offset | Formerly known as                               |
+| -------------------------- | ---------- | ----------------------------------------------- |
+| New England Standard Time  | -4         | Eastern Daylight Time                           |
+| East–Central Standard Time | -5         | Eastern Standard Time<br>Central Daylight Time  |
+| Plains Standard Time       | -6         | Central Standard Time<br>Mountain Daylight Time |
+| Western Standard Time      | -7         | Mountain Standard Time<br>Pacific Daylight Time |
+| Cascadia Standard Time     | -8         | Pacific Standard Time                           |
+
+Alaska and Hawaii keep their current respective standard times, Alaska Standard Time and Hawaii Standard Time.
 
 This map may look a bit surprising! I’ll discuss some of the more unintuitive aspects below, but first, let me explain how I came up with this map.
 
@@ -56,8 +60,8 @@ It would be nice if we could just put every city, town, and county in its ideal 
 
 I chose to do that by figuring out how _bad_ each potential time zone is for each state, following this set of steps:
 
-1. Go through each county in the state, 
-2. Try out different time zones for the geographical center of that county. If it’s the ideal time zone, it’s not bad at all. If it’s outside the ideal time zone, penalize it by the number of minutes outside. So if solar noon is at 1:04pm, that’s a penalty of 4.
+1. Go through each county in the state.
+2. Try out different time zones for the geographical center of that county. If it’s the ideal time zone, don’t penalize it at all. If it’s outside the ideal time zone, penalize it by the number of minutes outside. So if solar noon is at 1:04pm, that’s a penalty of 4.
 3. Multiply the penalty by the population of the county. For a county of 1,000 people with solar noon at 1:04pm, the penalty is 4,000.
 4. Add up all the penalties for all the counties in the state. That’s the overall penalty for the state in the time zone we’re considering.
 5. Pick the time zone that has the lowest penalty.
@@ -84,20 +88,20 @@ Just like we can describe Daylight Saving Time as switching time zones, we can d
 <tr>
 <th>Standard Time</th>
 <th>Daylight Saving Time</th>
-<th>Some of each (currently split)</th>
 </tr>
 <tr>
 <td>
-Alabama<br>
+Alabama*<br>
 Arizona<br>
 Arkansas<br>
 Colorado<br>
 Delaware<br>
-Florida<br>
+Florida*<br>
 Georgia<br>
+Idaho*<br>
+Indiana*<br>
 Iowa<br>
-Kansas<br>
-Kentucky<br>
+Kansas*<br>
 Louisiana<br>
 Maryland<br>
 Michigan<br>
@@ -105,18 +109,17 @@ Minnesota<br>
 Mississippi<br>
 Missouri<br>
 Montana<br>
-Nebraska<br>
+Nebraska*<br>
 New Mexico<br>
 North Carolina<br>
-North Dakota<br>
+North Dakota*<br>
 Ohio<br>
 Oklahoma<br>
 Oregon<br>
 Pennsylvan<br>ia
 South Carolina<br>
-South Dakota<br>
-Tennessee<br>
-Texas<br>
+South Dakota*<br>
+Texas*<br>
 Utah<br>
 Virginia<br>
 Washington<br>
@@ -126,7 +129,8 @@ Wyoming
 <td>
 California<br>
 Connecticut<br>
-Illinois<br>
+Illinois*<br>
+Kentucky*<br>
 Maine<br>
 Massachusetts<br>
 Nevada<br>
@@ -134,14 +138,14 @@ New Hampshire<br>
 New Jersey<br>
 New York<br>
 Rhode Island<br>
+Tennessee*<br>
 Vermont<br>
 Wisconsin
 </td>
-<td>
-Indiana
-</td>
 </tr>
 </table>
+
+_\*Many states contain two time zones in different regions of the state; the list above is based on the predominant time zone for each state._
 
 # So what should we do?
 
