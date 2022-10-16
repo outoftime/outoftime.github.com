@@ -66,6 +66,8 @@ I chose to do that by figuring out how _bad_ each potential time zone is for eac
 4. Add up all the penalties for all the counties in the state. That’s the overall penalty for the state in the time zone we’re considering.
 5. Pick the time zone that has the lowest penalty.
 
+I wrote a Python script to perform this analysis automatically; you can see it [on GitHub](https://github.com/outoftime/time-zones/blob/main/time_zones.py).
+
 This is a fairly utilitarian approach: we end up finding the time zone that produces an ideal solar noon (or gets as close to it as possible) for as many people in the state as we can. It’s certainly not the only possible approach, but I think it’s a pretty sensible one.
 
 I also think it yields a pretty sensible map of time zones, although it has some surprises. With an understanding of how the map was generated, we can discuss where those surprises came from.
