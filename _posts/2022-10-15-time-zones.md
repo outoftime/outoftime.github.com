@@ -1,6 +1,6 @@
 ---
 layout: time-zones
-title: Permanent daylight saving time, or permanent standard time? We’re asking the wrong question.
+title: If we stop changing our clocks, what’s the ideal time zone for each US state?
 permalink: /time-zones.html
 ---
 
