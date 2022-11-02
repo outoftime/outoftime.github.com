@@ -50,9 +50,13 @@ In order to assign states to time zones, I start by proposing an answer to anoth
 
 Before explaining my answer to that question, I’ll need to introduce one more bit of terminology: **solar noon**. Solar noon is, quite simply, when the sun is highest in the sky. You might think that this happens at 12:00pm, but in most places, that’s not the case. Depending on where you are within your time zone, solar noon can be earlier or later than noon. During daylight saving time, it’s pretty much always going to be later than noon, and it’s not unusual to have it happen after 1:00pm.
 
+Another way to think of solar noon is as the time that’s halfway between sunrise and sunset. That means that, holding day length constant, a later solar noon means a later sunrise and a later sunset. An earlier solar noon means an earlier sunrise and earlier sunset.
+
+Unlike sunrise and sunset, though, the solar noon for a given location doesn’t change (much) throughout the year, and it doesn’t depend on how far north or south the location is. All that matters is the location’s longitude.
+
 The fact that we’re strongly considering permanent Daylight Saving Time in the United States reveals something about our society: **we prefer later sunsets**. I wanted to design a time zone map that respects that preference, while also ensuring that we don’t shift things _too_ late, like the example of Seattle in the winter under Pacific Daylight Time.
 
-So, I’m defining the ideal time zone as **the time zone where solar noon is between 12:00pm and 1:00pm on the clock**. Since there are 24 possible GMT offsets, and 24 hours in the day, this produces exactly one ideal time zone for any given place. And it builds in our preference for later sunsets: while solar noon could in principle be either before or after 12:00pm, we’re saying we always want it to be after. A later solar noon means a later sunset.
+So, I’m defining the ideal time zone as **the time zone where solar noon is between 12:00pm and 1:00pm on the clock**. Since there are 24 whole-number GMT offsets, and 24 hours in the day, this produces exactly one ideal time zone for any given place. And it builds in our preference for later sunsets: while solar noon could in principle be either before or after 12:00pm, we’re saying we always want it to be after. Recall that a later solar noon means a later sunset.
 
 ## Optimizing state time zones
 
