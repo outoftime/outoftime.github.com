@@ -1,6 +1,6 @@
 ---
 layout: time-zones
-title: If we stop changing our clocks, what’s the ideal time zone for each US state?
+title: After we stop changing our clocks, what’s the ideal time zone for each US state?
 permalink: /time-zones.html
 ---
 
